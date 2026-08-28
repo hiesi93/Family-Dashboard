@@ -171,6 +171,8 @@
   .todo-list li.done .checkbox{ background: var(--sage); border-color: var(--sage); }
   .todo-list li.done .checkbox::after{ opacity:1; }
   .todo-list li.done span{ text-decoration: line-through; color: var(--ink-soft); }
+  .del-x{ margin-left:auto; color: var(--ink-soft); font-size:16px; cursor:pointer; padding:0 4px; flex-shrink:0; }
+  .del-x:hover{ color: var(--berry); }
   .add-row{ display:flex; gap:8px; margin-top:12px; }
   .add-row input{ flex:1; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
   .add-row input:focus{ outline:2px solid var(--sage); outline-offset:1px; }
@@ -252,10 +254,37 @@
     .meal-row{ grid-template-columns: repeat(2, 1fr); }
   }
   @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
+
+  .gate-overlay{ position:fixed; inset:0; background: var(--ink); display:flex; align-items:center; justify-content:center; z-index:999; padding:20px; }
+  .gate-box{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px 28px; text-align:center; width:100%; max-width:320px; }
+  .gate-title{ font-family:'Fraunces', serif; font-size:22px; font-weight:600; margin-bottom:6px; }
+  .gate-sub{ font-size:13px; color: var(--ink-soft); margin:0 0 18px; }
+  .gate-box input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 11px 14px; font-family:'IBM Plex Mono', monospace; font-size: 16px; text-align:center; letter-spacing:.15em; margin-bottom:12px; }
+  .gate-box button{ width:100%; border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:14px; cursor:pointer; }
+  .gate-box button:hover{ background: var(--sage); }
+  .gate-error{ color: var(--berry); font-size:12px; margin: 10px 0 0; display:none; }
+  .gate-error.show{ display:block; }
+
+  .google-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin: 14px 0 6px; }
+  .google-btn{ border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
+  .google-btn:hover{ background: var(--ink); }
+  .google-btn.connected{ background: var(--sage); }
+  .google-status{ font-size:12px; color: var(--ink-soft); }
+  .calendar-debug{ font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:10px 14px; margin: 8px 0 20px; display:none; white-space:pre-wrap; }
+  .calendar-debug.show{ display:block; }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div id="gateOverlay" class="gate-overlay">
+  <div class="gate-box">
+    <div class="gate-title">🔒 Familienboard</div>
+    <p class="gate-sub">Bitte Zugangscode eingeben</p>
+    <input type="password" id="gateInput" inputmode="numeric" placeholder="Code" autofocus>
+    <button onclick="checkGate()">Weiter</button>
+    <p class="gate-error" id="gateError">Falscher Code, bitte nochmal versuchen.</p>
+  </div>
+</div>
+<div class="wrap" id="mainWrap" style="display:none;">
 
   <span class="draft-badge">Entwurf · teils Live-Daten (Wetter/UV/Radar), Kalender &amp; Listen noch Beispieldaten</span>
 
@@ -271,6 +300,12 @@
       <div class="meta" id="heroMeta">Meist bewölkt<br><b>30°</b> / 18° heute<br>Linz</div>
     </div>
   </div>
+
+  <div class="google-bar">
+    <button id="googleBtn" class="google-btn" onclick="connectGoogle()">🔑 Mit Google anmelden</button>
+    <span id="googleStatus" class="google-status">Kalender zeigt noch Beispieldaten.</span>
+  </div>
+  <div id="calendarDebug" class="calendar-debug"></div>
 
   <div class="week-strip" id="weekStrip"></div>
 
@@ -391,7 +426,21 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer onload="initGoogle()"></script>
 <script>
+  /* ---------- Zugangscode-Sperre ---------- */
+  const FAMILY_CODE = '2026'; // <- hier euren eigenen Code eintragen
+  function checkGate(){
+    const val = document.getElementById('gateInput').value.trim();
+    if(val === FAMILY_CODE){
+      document.getElementById('gateOverlay').style.display = 'none';
+      document.getElementById('mainWrap').style.display = '';
+    }else{
+      document.getElementById('gateError').classList.add('show');
+    }
+  }
+  document.getElementById('gateInput').addEventListener('keyup', (e)=>{ if(e.key==='Enter') checkGate(); });
+
   const people = [
     { name:'Mama', initial:'M', color:'var(--berry)' },
     { name:'Papa', initial:'P', color:'var(--sky)' },
@@ -466,28 +515,33 @@
   };
 
   const familyGrid = document.getElementById('familyGrid');
-  people.forEach((p, idx)=>{
-    const myEvents = agenda.filter(a => a.who.includes(idx));
-    const card = document.createElement('div');
-    card.className = 'person-card';
-    card.onclick = ()=> setPersonFilter(idx);
-    card.innerHTML = `
-      <div class="person-head">
-        <div class="avatar" style="background:${p.color}">${p.initial}</div>
-        <div><b>${p.name}</b><span>${myEvents.length} Termin${myEvents.length===1?'':'e'} heute</span></div>
-      </div>
-      <div class="person-events">${myEvents.map(e=>`<div class="pe-item"><b>${e.time}</b><span>${e.title}</span></div>`).join('') || '<div class="pe-item" style="opacity:.6;">Keine Termine heute</div>'}</div>
-      <ul class="person-todo" id="todo-${p.name}"></ul>
-    `;
-    familyGrid.appendChild(card);
-    const ul = card.querySelector(`#todo-${p.name}`);
-    personalTodos[p.name].forEach(text=>{
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="mini-checkbox"></span><span class="txt">${text}</span>`;
-      li.onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
-      ul.appendChild(li);
+  function renderFamilyGrid(){
+    familyGrid.innerHTML = '';
+    people.forEach((p, idx)=>{
+      const myEvents = agenda.filter(a => a.who.includes(idx));
+      const card = document.createElement('div');
+      card.className = 'person-card';
+      card.onclick = ()=> setPersonFilter(idx);
+      card.innerHTML = `
+        <div class="person-head">
+          <div class="avatar" style="background:${p.color}">${p.initial}</div>
+          <div><b>${p.name}</b><span>${myEvents.length} Termin${myEvents.length===1?'':'e'} heute</span></div>
+        </div>
+        <div class="person-events">${myEvents.map(e=>`<div class="pe-item"><b>${e.time}</b><span>${e.title}</span></div>`).join('') || '<div class="pe-item" style="opacity:.6;">Keine Termine heute</div>'}</div>
+        <ul class="person-todo" id="todo-${p.name}"></ul>
+      `;
+      familyGrid.appendChild(card);
+      const ul = card.querySelector(`#todo-${p.name}`);
+      personalTodos[p.name].forEach(text=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="mini-checkbox"></span><span class="txt">${text}</span><span class="del-x" onclick="event.stopPropagation(); this.parentElement.remove();">×</span>`;
+        li.querySelector('.mini-checkbox').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
+        li.querySelector('.txt').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
+        ul.appendChild(li);
+      });
     });
-  });
+  }
+  renderFamilyGrid();
   renderAgenda();
 
   /* ---------- Essensplaner ---------- */
@@ -718,6 +772,10 @@
     if(item) item.done = !item.done;
     renderShopList();
   }
+  function removeShopItem(key){
+    shopState = shopState.filter(i=>i.key!==key);
+    renderShopList();
+  }
   function setItemStore(key, store){
     const item = shopState.find(i=>i.key===key);
     if(item) item.store = (item.store===store) ? null : store;
@@ -750,6 +808,7 @@
           <span class="checkbox" onclick="toggleShopDone('${i.key}')"></span>
           <span class="shop-name" onclick="toggleShopDone('${i.key}')">${i.name}${i.count>1?' ×'+i.count:''}</span>
           <span class="store-chips">${STORES.map(s=>`<button class="store-chip ${i.store===s?'active':''}" style="--sc:${STORE_COLORS[s]}" onclick="setItemStore('${i.key}','${s}')" title="${s}">${s[0]}</button>`).join('')}</span>
+          <span class="del-x" onclick="removeShopItem('${i.key}')">×</span>
         </div>`;
       });
     });
@@ -795,23 +854,22 @@
   const choreItems = ['Altpapier rausbringen','Küche kehren','Blumen gießen'];
   function renderChoreList(){
     const ul = document.getElementById('choreList');
-    choreItems.forEach(text=>{
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="checkbox"></span><span>${text}</span>`;
-      li.onclick = ()=> li.classList.toggle('done');
-      ul.appendChild(li);
-    });
+    choreItems.forEach(text=> addChoreLine(text));
+  }
+  function addChoreLine(text){
+    const ul = document.getElementById('choreList');
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="checkbox"></span><span>${text}</span><span class="del-x" onclick="event.stopPropagation(); this.parentElement.remove();">×</span>`;
+    li.querySelector('.checkbox').onclick = ()=> li.classList.toggle('done');
+    li.querySelector('span:nth-child(2)').onclick = ()=> li.classList.toggle('done');
+    ul.appendChild(li);
   }
   renderChoreList();
   function addChore(){
     const input = document.getElementById('choreInput');
     const val = input.value.trim();
     if(!val) return;
-    const ul = document.getElementById('choreList');
-    const li = document.createElement('li');
-    li.innerHTML = `<span class="checkbox"></span><span>${val}</span>`;
-    li.onclick = ()=> li.classList.toggle('done');
-    ul.appendChild(li);
+    addChoreLine(val);
     input.value = '';
   }
 
@@ -893,6 +951,100 @@
       document.getElementById('uvBadge').textContent = 'UV-Index aktuell nicht abrufbar';
       document.getElementById('hourlyRow').innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Regen-Ausblick aktuell nicht abrufbar.</span>';
     });
+
+  /* ---------- Google-Anmeldung & echter Kalender ---------- */
+  const GOOGLE_CLIENT_ID = '834201109275-au15o6plrp4iv4a007bcupm7pmhqvia4.apps.googleusercontent.com';
+  const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+
+  // Trag hier die EXAKTEN Kalendernamen ein, sobald du sie im Debug-Kasten siehst.
+  // 0=Mama, 1=Papa, 2=Matteo, 3=Laurin, 'family' = zählt für alle vier.
+  const CALENDAR_PERSON_MAP = {
+    // 'Familie':        'family',
+    // 'Name der Frau':  0,
+    // 'dein Google-Kalendername (meist deine E-Mail)': 1,
+    // 'Matteo':         2,
+    // 'Laurin':         3,
+  };
+
+  let googleTokenClient = null;
+  let googleAccessToken = null;
+
+  function initGoogle(){
+    if(typeof google === 'undefined' || !google.accounts) return;
+    googleTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: GOOGLE_SCOPES,
+      callback: (resp)=>{
+        if(resp.error){
+          document.getElementById('googleStatus').textContent = 'Anmeldung nicht möglich, bitte nochmal versuchen.';
+          return;
+        }
+        googleAccessToken = resp.access_token;
+        document.getElementById('googleBtn').textContent = '✓ Google verbunden';
+        document.getElementById('googleBtn').classList.add('connected');
+        loadGoogleCalendars();
+      },
+    });
+    // Stiller Versuch, ohne Klick anzumelden, falls Browser noch bei Google eingeloggt ist
+    googleTokenClient.requestAccessToken({prompt:'none'});
+  }
+
+  function connectGoogle(){
+    if(!googleTokenClient){ document.getElementById('googleStatus').textContent = 'Google-Anmeldung lädt noch, bitte kurz warten und nochmal klicken.'; return; }
+    googleTokenClient.requestAccessToken({prompt:'consent'});
+  }
+
+  async function loadGoogleCalendars(){
+    document.getElementById('googleStatus').textContent = 'Kalender werden geladen…';
+    try{
+      const res = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList', {
+        headers:{ Authorization: 'Bearer ' + googleAccessToken }
+      });
+      const data = await res.json();
+      const cals = data.items || [];
+
+      const mapped = cals.filter(c => CALENDAR_PERSON_MAP.hasOwnProperty(c.summary));
+      if(mapped.length === 0){
+        const dbg = document.getElementById('calendarDebug');
+        dbg.classList.add('show');
+        dbg.textContent = 'Gefundene Kalender (noch keiner zugeordnet – diese Namen an Claude schicken):\n' + cals.map(c=>'• '+c.summary).join('\n');
+        document.getElementById('googleStatus').textContent = 'Verbunden, aber noch keine Kalender zugeordnet (siehe Kasten unten).';
+        return;
+      }
+
+      const now = new Date();
+      const dayStart = new Date(now); dayStart.setHours(0,0,0,0);
+      const dayEnd = new Date(now); dayEnd.setHours(23,59,59,999);
+
+      let newAgenda = [];
+      for(const cal of mapped){
+        const personIdx = CALENDAR_PERSON_MAP[cal.summary];
+        const evRes = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?timeMin=${dayStart.toISOString()}&timeMax=${dayEnd.toISOString()}&singleEvents=true&orderBy=startTime`,
+          { headers:{ Authorization: 'Bearer ' + googleAccessToken } }
+        );
+        const evData = await evRes.json();
+        (evData.items || []).forEach(ev=>{
+          const timeStr = ev.start.dateTime
+            ? new Date(ev.start.dateTime).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})
+            : 'Ganztägig';
+          const who = personIdx === 'family' ? [0,1,2,3] : [personIdx];
+          newAgenda.push({ time:timeStr, title: ev.summary || '(ohne Titel)', who, color: people[who[0]].color });
+        });
+      }
+      newAgenda.sort((a,b)=> a.time.localeCompare(b.time));
+
+      agenda.length = 0;
+      agenda.push(...newAgenda);
+      renderAgenda();
+      renderFamilyGrid();
+      document.getElementById('googleStatus').textContent = `Verbunden – ${newAgenda.length} Termin(e) heute aus eurem echten Kalender.`;
+      document.querySelector('.draft-badge').textContent = 'Kalender live · übrige Bereiche teils noch Beispieldaten';
+    }catch(e){
+      document.getElementById('googleStatus').textContent = 'Kalender konnten nicht geladen werden.';
+    }
+  }
+
 </script>
 </body>
 </html>
