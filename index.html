@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Familienboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board: #E7E4D6;
+    --board-2: #DEDACB;
+    --card: #F6F4EA;
+    --ink: #232821;
+    --ink-soft: #56604F;
+    --line: rgba(35,40,33,0.12);
+    --amber: #D98E2B;
+    --amber-soft: #F1D9AE;
+    --sage: #5C7A5E;
+    --sage-soft: #D9E3D6;
+    --berry: #A8415B;
+    --berry-soft: #F0D6DD;
+    --sky: #4C7A93;
+    --sky-soft: #D9E6EC;
+    --radius: 18px;
+    --shadow: 0 1px 2px rgba(35,40,33,0.06), 0 8px 20px -10px rgba(35,40,33,0.18);
+  }
+  * { box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: radial-gradient(1200px 500px at 15% -10%, var(--board-2), transparent), var(--board);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: clamp(16px, 3vw, 40px);
+  }
+  .wrap{ max-width: 1280px; margin: 0 auto; }
+
+  .draft-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background: var(--ink); color: var(--card);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.04em;
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .draft-badge::before{ content:''; width:6px; height:6px; border-radius:50%; background: var(--amber); }
+
+  .hero{
+    display:flex; justify-content: space-between; align-items: flex-end;
+    gap: 24px; flex-wrap: wrap;
+    padding-bottom: 22px; margin-bottom: 26px;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .hero-date .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 4px;
+  }
+  .hero-date h1{
+    font-family: 'Fraunces', serif; font-weight: 600; font-optical-sizing: auto;
+    font-size: clamp(34px, 5.2vw, 58px); line-height: 0.98; margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .hero-date .sub{ color: var(--ink-soft); font-size: 15px; margin-top: 8px; }
+
+  .weather-chip{
+    display:flex; align-items:center; gap: 16px;
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 14px 22px;
+  }
+  .weather-chip .icon{ font-size: 34px; line-height:1; }
+  .weather-chip .temp{ font-family:'Fraunces', serif; font-size: 30px; font-weight: 600; }
+  .weather-chip .meta{ font-size: 12.5px; color: var(--ink-soft); line-height:1.4; }
+  .weather-chip .meta b{ color: var(--ink); font-weight:600;}
+
+  .week-strip{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 28px; }
+  .day-note{
+    background: var(--card); border-radius: 14px; box-shadow: var(--shadow);
+    padding: 12px 10px 14px; min-height: 108px;
+    display:flex; flex-direction:column; gap:8px;
+    transition: transform .15s ease;
+  }
+  .day-note .dow{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .day-note .dom{ font-family:'Fraunces', serif; font-size:22px; font-weight:600; margin-top:-2px;}
+  .day-note .dots{ display:flex; flex-wrap:wrap; gap:4px; margin-top:auto; }
+  .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .day-note.today{
+    background: var(--ink); color: var(--card);
+    transform: rotate(-1.2deg) scale(1.04);
+    box-shadow: 0 4px 6px rgba(35,40,33,0.15), 0 14px 26px -12px rgba(35,40,33,0.4);
+  }
+  .day-note.today .dow{ color: var(--amber-soft); }
+  .day-note.today .dom{ color: var(--card); }
+
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin: 6px 0 14px; flex-wrap:wrap; gap:6px; }
+  .section-head h2{ font-family:'Fraunces', serif; font-size: 21px; font-weight:600; margin:0; }
+  .section-head .tag{ font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:11px; color: var(--ink-soft); }
+
+  .family-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 14px; }
+  .person-card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 18px 16px; cursor:pointer; border: 2px solid transparent; transition: border-color .15s ease, transform .15s ease; }
+  .person-card:hover{ transform: translateY(-2px); }
+  .person-card.active{ border-color: var(--ink); }
+  .person-head{ display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
+  .avatar{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:600; font-size:16px; color:var(--card); flex-shrink:0; }
+  .person-head b{ font-size:15.5px; display:block; }
+  .person-head span{ font-size:11.5px; color: var(--ink-soft); }
+  .person-events{ font-size: 12.5px; margin-bottom: 10px; }
+  .person-events .pe-item{ display:flex; gap:6px; padding:4px 0; color: var(--ink-soft); }
+  .person-events .pe-item b{ color: var(--ink); font-weight:500; font-family:'IBM Plex Mono', monospace; font-size:11.5px; }
+  .person-todo{ list-style:none; margin:10px 0 0; padding-top:10px; border-top:1px solid var(--line); }
+  .person-todo li{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; cursor:pointer; user-select:none; }
+  .mini-checkbox{ width:16px; height:16px; border-radius:5px; border:1.5px solid var(--ink-soft); flex-shrink:0; position:relative; }
+  .mini-checkbox::after{ content:''; position:absolute; left:4px; top:2px; width:6px; height:3px; border-left:2px solid white; border-bottom:2px solid white; transform: rotate(-45deg); opacity:0; }
+  .person-todo li.done .mini-checkbox{ background: var(--sage); border-color: var(--sage); }
+  .person-todo li.done .mini-checkbox::after{ opacity:1; }
+  .person-todo li.done span.txt{ text-decoration:line-through; color: var(--ink-soft); }
+  .filter-note{ font-size:12px; color: var(--ink-soft); margin: 0 0 22px; }
+  .filter-note button{ border:none; background:none; color: var(--berry); font-weight:600; cursor:pointer; font-size:12px; padding:0; text-decoration:underline; }
+
+  .grid{ display:grid; grid-template-columns: 1.6fr 1fr; gap: 20px; align-items:start; margin-bottom: 28px; }
+  .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; }
+  .card h2{ font-family:'Fraunces', serif; font-size: 19px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .card h2 .tag{ font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:11px; color: var(--ink-soft); }
+
+  .view-toggle{ display:flex; gap:6px; }
+  .view-toggle button{
+    border:1px solid var(--line); background: var(--board); color: var(--ink-soft);
+    font-family:'Inter',sans-serif; font-size:11.5px; font-weight:600; border-radius:999px; padding:5px 12px; cursor:pointer;
+  }
+  .view-toggle button.active{ background: var(--ink); color: var(--card); border-color: var(--ink); }
+  .month-stub{ font-size:13px; color: var(--ink-soft); background: var(--board); border-radius:12px; padding:16px; display:none; }
+  .month-stub.show{ display:block; }
+
+  .agenda-item{ display:flex; gap: 12px; align-items:flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .agenda-item:first-of-type{ border-top:none; }
+  .agenda-time{ font-family:'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--ink-soft); width: 46px; flex-shrink:0; padding-top:2px;}
+  .agenda-bar{ width:4px; border-radius:3px; align-self:stretch; flex-shrink:0; }
+  .agenda-body b{ display:block; font-size:14.5px; font-weight:600; }
+  .agenda-body span{ font-size:12.5px; color: var(--ink-soft); }
+  .who{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; color: var(--ink-soft); margin-top:3px; }
+  .who .dot{ width:7px; height:7px; }
+  .empty-note{ font-size:13px; color: var(--ink-soft); padding: 6px 0; }
+
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; font-size:12px; color: var(--ink-soft); }
+
+  .side-stack{ display:flex; flex-direction:column; gap: 20px; }
+  .trash-card{ background: linear-gradient(160deg, var(--sage-soft), var(--card) 60%); }
+  .trash-row{ display:flex; align-items:center; gap:14px; }
+  .bin{ width:46px; height:54px; border-radius: 6px 6px 3px 3px; flex-shrink:0; position:relative; }
+  .bin::before{ content:''; position:absolute; top:-6px; left:4px; right:4px; height:8px; border-radius:3px; background:inherit; filter:brightness(0.85);}
+  .bin.yellow{ background: var(--amber); }
+  .trash-row b{ font-size: 15px; }
+  .trash-row span{ font-size: 12.5px; color: var(--ink-soft); display:block; margin-top:2px;}
+
+  .uv-badge{ display:inline-flex; align-items:center; gap:6px; background: var(--amber-soft); color:#7A4E12; font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:999px; margin-top:8px; }
+  .forecast-row{ display:flex; justify-content:space-between; gap:4px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); overflow-x:auto; }
+  .fc-day{ text-align:center; font-size:11px; color: var(--ink-soft); flex-shrink:0; min-width:30px; }
+  .fc-day .d{ font-family:'IBM Plex Mono', monospace; text-transform:uppercase; font-size:10px;}
+  .fc-day .ic{ font-size:15px; margin-top:2px; }
+  .fc-day .t{ font-size: 12.5px; color: var(--ink); font-weight:600; margin-top:2px; }
+
+  .todo-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .todo-list{ list-style:none; margin:0; padding:0; }
+  .todo-list li{ display:flex; align-items:center; gap:10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14.5px; cursor:pointer; user-select:none; }
+  .todo-list li:first-child{ border-top:none; }
+  .checkbox{ width:19px; height:19px; border-radius:6px; border: 1.5px solid var(--ink-soft); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition: all .12s ease; position:relative; }
+  .checkbox::after{ content:''; position:absolute; left:5px; top:3px; width:9px; height:5px; border-left:2px solid white; border-bottom:2px solid white; transform: rotate(-45deg) translateY(-1px); opacity:0; }
+  .todo-list li.done .checkbox{ background: var(--sage); border-color: var(--sage); }
+  .todo-list li.done .checkbox::after{ opacity:1; }
+  .todo-list li.done span{ text-decoration: line-through; color: var(--ink-soft); }
+  .add-row{ display:flex; gap:8px; margin-top:12px; }
+  .add-row input{ flex:1; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
+  .add-row input:focus{ outline:2px solid var(--sage); outline-offset:1px; }
+  .add-row button{ border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 0 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; }
+  .add-row button:hover{ background: var(--sage); }
+  .shop-flash{ display:inline-block; font-size:11px; color: var(--sage); font-weight:600; margin-left:6px; opacity:0; transition:opacity .2s ease; }
+  .shop-flash.show{ opacity:1; }
+  .store-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .store-tabs button{ border:1px solid var(--line); background: var(--board); color: var(--ink-soft); font-family:'Inter',sans-serif; font-size:11.5px; font-weight:600; border-radius:999px; padding:5px 12px; cursor:pointer; }
+  .store-tabs button.active{ background: var(--ink); color: var(--card); border-color: var(--ink); }
+  .cat-head{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color: var(--ink-soft); margin: 12px 0 4px; }
+  .cat-head:first-child{ margin-top:0; }
+  .shop-row{ display:flex; align-items:center; gap:10px; padding:7px 0; border-top:1px solid var(--line); }
+  .shop-row:first-of-type{ border-top:none; }
+  .shop-name{ flex:1; font-size:14px; cursor:pointer; }
+  .shop-row.done .shop-name{ text-decoration:line-through; color: var(--ink-soft); }
+  .shop-row.done .checkbox{ background: var(--sage); border-color: var(--sage); }
+  .shop-row.done .checkbox::after{ opacity:1; }
+  .store-chips{ display:flex; gap:4px; }
+  .store-chip{ width:20px; height:20px; border-radius:6px; border:1.5px solid var(--line); background: var(--board); color: var(--ink-soft); font-size:10px; font-weight:700; cursor:pointer; }
+  .store-chip.active{ background: var(--sc); border-color: var(--sc); color: var(--card); }
+  .shop-start-btn{ width:100%; border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:14px; }
+  .shop-start-btn:hover{ background: var(--berry); }
+  .shop-prompt{ display:none; white-space:pre-wrap; font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:12px; margin-top:10px; max-height:160px; overflow-y:auto; }
+  .shop-prompt.show{ display:block; }
+
+  .meal-controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom: 18px; }
+  .meal-controls select{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
+  .dice-btn{ border:none; background: var(--berry); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+  .dice-btn:hover{ background: var(--ink); }
+  .meal-row{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 18px; }
+  .meal-day{ background: var(--board); border-radius: 12px; padding: 12px 10px; display:flex; flex-direction:column; gap:8px; }
+  .meal-day .dname{ font-family:'IBM Plex Mono', monospace; font-size: 11px; text-transform:uppercase; letter-spacing:.05em; color: var(--ink-soft); }
+  .dish-line{ display:flex; align-items:flex-start; justify-content:space-between; gap:6px; }
+  .meal-day .dish{ font-family:'Fraunces', serif; font-size: 13.5px; font-weight:600; line-height:1.25; min-height: 36px; }
+  .plus-btn{ border:none; background: var(--sage); color:var(--card); width:20px; height:20px; border-radius:6px; font-size:14px; line-height:1; cursor:pointer; flex-shrink:0; }
+  .plus-btn:hover{ background: var(--ink); }
+  .meal-day select{ border:1px solid var(--line); background: var(--card); border-radius:8px; padding: 6px 8px; font-family:'Inter',sans-serif; font-size: 11.5px; color: var(--ink); width:100%; }
+  .add-dish-form{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-top:1px solid var(--line); padding-top:16px; }
+  .add-dish-form input{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 8px 12px; font-family:'Inter',sans-serif; font-size: 13px; color: var(--ink); }
+  .add-dish-form input.name{ flex:1; min-width:160px; }
+  .add-dish-form input.ing{ flex:2; min-width:220px; }
+  .add-dish-form button{ border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
+  .add-dish-form button:hover{ background: var(--sage); }
+  .add-dish-hint{ width:100%; font-size:11.5px; color: var(--ink-soft); }
+
+  #radarMap{ height:280px; border-radius:14px; overflow:hidden; }
+  .radar-note{ font-size:12px; color: var(--ink-soft); margin-top:10px; }
+  .radar-slider-row{ display:flex; align-items:center; gap:10px; margin-top:12px; }
+  .radar-play{ border:none; background: var(--sky); color: var(--card); width:30px; height:30px; border-radius:50%; font-size:12px; cursor:pointer; flex-shrink:0; }
+  .radar-play:hover{ background: var(--ink); }
+  .radar-slider-row input[type=range]{ flex:1; accent-color: var(--sky); }
+  .radar-time{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--ink-soft); width:80px; text-align:right; flex-shrink:0; }
+  .hourly-row{ display:flex; gap:8px; overflow-x:auto; margin-top:12px; padding-top:14px; border-top:1px solid var(--line); }
+  .hr-col{ text-align:center; font-size:11.5px; color: var(--ink-soft); flex-shrink:0; min-width:52px; background: var(--board); border-radius:10px; padding:8px 6px; }
+  .hr-col .h{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; }
+  .hr-col .ic{ font-size:16px; margin:4px 0; }
+  .hr-col .p{ font-size:12px; font-weight:600; color: var(--sky); }
+
+  .wifi-card{ text-align:center; }
+  #guestWifiQr{ display:flex; justify-content:center; margin: 8px 0 10px; }
+  .wifi-meta{ font-size:12px; color: var(--ink-soft); line-height:1.5; }
+  .test-tag{ display:inline-block; background: var(--berry-soft); color: var(--berry); font-size:10.5px; font-weight:700; letter-spacing:.04em; padding:2px 8px; border-radius:999px; margin-bottom:10px; }
+
+  .route-form label{ font-size:11.5px; color: var(--ink-soft); display:block; margin-bottom:4px; }
+  .route-form input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); margin-bottom:10px; }
+  .route-form button{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 10px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; }
+  .route-form button:hover{ background: var(--ink); }
+  .route-note{ font-size:11.5px; color: var(--ink-soft); margin-top:10px; }
+
+  footer{ text-align:center; margin-top: 30px; font-size: 12px; color: var(--ink-soft); }
+
+  @media (max-width: 860px){
+    .grid{ grid-template-columns: 1fr; }
+    .week-strip{ grid-template-columns: repeat(4, 1fr); }
+    .day-note:nth-child(n+5){ display:none; }
+    .todo-row{ grid-template-columns: 1fr; }
+    .family-grid{ grid-template-columns: repeat(2, 1fr); }
+    .meal-row{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="draft-badge">Entwurf · teils Live-Daten (Wetter/UV/Radar), Kalender &amp; Listen noch Beispieldaten</span>
+
+  <div class="hero">
+    <div class="hero-date">
+      <p class="eyebrow">Donnerstag · 27. August 2026</p>
+      <h1>Guten Morgen.</h1>
+      <p class="sub">3 Termine heute · 2 Aufgaben offen · Gelbe Tonne morgen früh</p>
+    </div>
+    <div class="weather-chip">
+      <div class="icon" id="heroIcon">☁️</div>
+      <div><div class="temp" id="heroTemp">25°</div></div>
+      <div class="meta" id="heroMeta">Meist bewölkt<br><b>30°</b> / 18° heute<br>Linz</div>
+    </div>
+  </div>
+
+  <div class="week-strip" id="weekStrip"></div>
+
+  <div class="section-head"><h2>Familie</h2><span class="tag">antippen filtert den Kalender darunter</span></div>
+  <div class="family-grid" id="familyGrid"></div>
+  <p class="filter-note" id="filterNote">Alle Familienmitglieder werden im Kalender unten angezeigt.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2 id="heuteTitle">Heute <span class="tag">alle zusammen</span>
+        <span class="view-toggle">
+          <button id="btnViewHeute" class="active" onclick="setView('heute')">Heute</button>
+          <button id="btnViewMonat" onclick="setView('monat')">Monat</button>
+        </span>
+      </h2>
+      <div id="agendaList"></div>
+      <div class="month-stub" id="monthStub">Monatsansicht folgt, sobald eure echten Kalender (Google/iCloud) über Home Assistant verbunden sind – dann blättert ihr hier durch alle Monate statt nur den heutigen Tag zu sehen.</div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="side-stack">
+      <div class="card trash-card">
+        <h2>Müllkalender</h2>
+        <div class="trash-row">
+          <div class="bin yellow"></div>
+          <div><b>Gelbe Tonne</b><span>morgen früh · bitte heute Abend rausstellen</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Wetter <span class="tag">live · Open-Meteo</span></h2>
+        <div style="display:flex; align-items:baseline; gap:10px;">
+          <span style="font-family:'Fraunces',serif; font-size:34px; font-weight:600;" id="sideTemp">25°</span>
+          <span style="color:var(--ink-soft); font-size:13px;" id="sideCond">Meist bewölkt, 10% Regen</span>
+        </div>
+        <span class="uv-badge" id="uvBadge">UV-Index wird geladen…</span>
+        <div class="forecast-row" id="forecastRow"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 28px;">
+    <div class="section-head" style="margin:0 0 16px;">
+      <h2>Essensplaner</h2>
+      <span class="tag">Wochen-Menü wählen, tauschen oder auslosen</span>
+    </div>
+    <div class="meal-controls">
+      <select id="themeSelect"></select>
+      <button class="dice-btn" onclick="randomizeWeek()">🎲 Neue Woche auslosen</button>
+    </div>
+    <div class="meal-row" id="mealRow"></div>
+    <div class="add-dish-form">
+      <input class="name" id="newDishName" type="text" placeholder="Neues Gericht, z. B. Kürbisgnocchi">
+      <input class="ing" id="newDishIng" type="text" placeholder="Zutaten, mit Komma getrennt">
+      <button onclick="addDish()">Zum aktuellen Thema hinzufügen</button>
+      <span class="add-dish-hint">Wird sofort im Dropdown wählbar und beim nächsten Auslosen mitberücksichtigt.</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Regenradar <span class="tag">live · Windy</span></h2>
+      <iframe id="radarFrame" width="100%" height="360" frameborder="0" style="border-radius:14px; border:none;"
+        src="https://embed.windy.com/embed2.html?lat=48.183&lon=14.117&detailLat=48.183&detailLon=14.117&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1">
+      </iframe>
+      <p class="radar-note">Interaktive Karte mit Zeitleiste unten im Fenster (funktioniert auch am Handy) – zeigt Marchtrenk.</p>
+
+      <h2 style="margin-top:22px;">Regen-Ausblick <span class="tag">stündlich · nächste 10h</span></h2>
+      <div class="hourly-row" id="hourlyRow"></div>
+    </div>
+    <div class="side-stack">
+      <div class="card wifi-card">
+        <h2 style="justify-content:center;">Gäste-WLAN</h2>
+        <span class="test-tag">NUR TEST</span>
+        <div id="guestWifiQr"></div>
+        <div class="wifi-meta">Netzwerk: <b>Familie-Gast</b><br>Passwort: <b>Test1234</b></div>
+      </div>
+      <div class="card">
+        <h2>Route planen</h2>
+        <div class="route-form">
+          <label>Von</label>
+          <input id="routeFrom" type="text" value="Zuhause">
+          <label>Nach</label>
+          <input id="routeTo" type="text" placeholder="Ziel eingeben…">
+          <button onclick="openRoute()">Route &amp; Stau in Google Maps prüfen</button>
+        </div>
+        <p class="route-note">Öffnet Google Maps mit aktueller Verkehrslage – kostenlos, ohne eigenen API-Key.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2>Listen <span class="tag">gemeinsam bearbeitbar</span></h2>
+    <div class="todo-row">
+      <div>
+        <h2 style="font-size:15px; margin-bottom:6px;">Einkaufen <span class="shop-flash" id="shopFlash">✓ Zutaten hinzugefügt</span></h2>
+        <div class="store-tabs" id="storeTabs"></div>
+        <div id="shopListContainer"></div>
+        <div class="add-row">
+          <input type="text" id="shopInput" placeholder="Artikel hinzufügen…">
+          <button onclick="addItem()">+</button>
+        </div>
+        <button class="shop-start-btn" onclick="startShopping()">🛒 Einkauf starten</button>
+        <div class="shop-prompt" id="shopPrompt"></div>
+      </div>
+      <div>
+        <h2 style="font-size:15px; margin-bottom:6px;">Gemeinsamer Haushalt</h2>
+        <ul class="todo-list" id="choreList"></ul>
+        <div class="add-row">
+          <input type="text" id="choreInput" placeholder="Aufgabe hinzufügen…">
+          <button onclick="addChore()">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Familienboard · Entwurf v3 — Kalender, Listen und Müllkalender werden im nächsten Schritt an eure Home-Assistant-Instanz angebunden</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  const people = [
+    { name:'Mama', initial:'M', color:'var(--berry)' },
+    { name:'Papa', initial:'P', color:'var(--sky)' },
+    { name:'Matteo', initial:'Mt', color:'var(--sage)' },
+    { name:'Laurin', initial:'L', color:'var(--amber)' },
+  ];
+
+  const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const dayEvents = [ [0,2], [1], [2,3], [0,1,3], [3], [], [1,2] ];
+  const todayIdx = 3;
+
+  const weekStrip = document.getElementById('weekStrip');
+  days.forEach((d,i)=>{
+    const el = document.createElement('div');
+    el.className = 'day-note' + (i===todayIdx ? ' today' : '');
+    el.innerHTML = `<div class="dow">${d}</div><div class="dom">${24+i}</div><div class="dots">${dayEvents[i].map(p=>`<span class="dot" style="background:${people[p].color}"></span>`).join('')}</div>`;
+    weekStrip.appendChild(el);
+  });
+
+  const agenda = [
+    { time:'08:00', title:'Schulbeginn Matteo', who:[2], color:'var(--sage)' },
+    { time:'14:30', title:'Zahnarzttermin Laurin', who:[1,3], color:'var(--amber)' },
+    { time:'18:00', title:'Fußballtraining', who:[3], color:'var(--amber)' },
+  ];
+
+  let selectedPerson = null;
+  const agendaList = document.getElementById('agendaList');
+  const filterNote = document.getElementById('filterNote');
+  const heuteTitle = document.getElementById('heuteTitle');
+
+  function renderAgenda(){
+    agendaList.innerHTML = '';
+    const items = selectedPerson===null ? agenda : agenda.filter(a=>a.who.includes(selectedPerson));
+    if(items.length===0){
+      agendaList.innerHTML = '<div class="empty-note">Keine Termine heute.</div>';
+    }
+    items.forEach(a=>{
+      const el = document.createElement('div');
+      el.className = 'agenda-item';
+      el.innerHTML = `<div class="agenda-time">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${a.title}</b><span class="who">${a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ')}</span></div>`;
+      agendaList.appendChild(el);
+    });
+    if(selectedPerson===null){
+      filterNote.innerHTML = 'Alle Familienmitglieder werden im Kalender unten angezeigt.';
+    }else{
+      filterNote.innerHTML = `Kalender gefiltert auf <b>${people[selectedPerson].name}</b>. <button onclick="setPersonFilter(null)">Alle wieder anzeigen</button>`;
+    }
+  }
+
+  function setPersonFilter(idx){
+    selectedPerson = (selectedPerson===idx) ? null : idx;
+    document.querySelectorAll('.person-card').forEach((c,i)=> c.classList.toggle('active', i===selectedPerson));
+    renderAgenda();
+  }
+
+  function setView(v){
+    const showMonth = v==='monat';
+    document.getElementById('monthStub').classList.toggle('show', showMonth);
+    agendaList.style.display = showMonth ? 'none' : '';
+    document.getElementById('btnViewHeute').classList.toggle('active', !showMonth);
+    document.getElementById('btnViewMonat').classList.toggle('active', showMonth);
+  }
+
+  const legend = document.getElementById('legend');
+  people.forEach(p=>{ legend.innerHTML += `<span><span class="dot" style="background:${p.color}"></span>${p.name}</span>`; });
+
+  const personalTodos = {
+    Mama:   ['Wocheneinkauf planen', 'Elternabend vorbereiten'],
+    Papa:   ['Auto zur Inspektion bringen', 'Rasen mähen'],
+    Matteo: ['Hausaufgaben Mathe', 'Zimmer aufräumen'],
+    Laurin: ['Fußballschuhe putzen', 'Leseheft fertig machen'],
+  };
+
+  const familyGrid = document.getElementById('familyGrid');
+  people.forEach((p, idx)=>{
+    const myEvents = agenda.filter(a => a.who.includes(idx));
+    const card = document.createElement('div');
+    card.className = 'person-card';
+    card.onclick = ()=> setPersonFilter(idx);
+    card.innerHTML = `
+      <div class="person-head">
+        <div class="avatar" style="background:${p.color}">${p.initial}</div>
+        <div><b>${p.name}</b><span>${myEvents.length} Termin${myEvents.length===1?'':'e'} heute</span></div>
+      </div>
+      <div class="person-events">${myEvents.map(e=>`<div class="pe-item"><b>${e.time}</b><span>${e.title}</span></div>`).join('') || '<div class="pe-item" style="opacity:.6;">Keine Termine heute</div>'}</div>
+      <ul class="person-todo" id="todo-${p.name}"></ul>
+    `;
+    familyGrid.appendChild(card);
+    const ul = card.querySelector(`#todo-${p.name}`);
+    personalTodos[p.name].forEach(text=>{
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="mini-checkbox"></span><span class="txt">${text}</span>`;
+      li.onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
+      ul.appendChild(li);
+    });
+  });
+  renderAgenda();
+
+  /* ---------- Essensplaner ---------- */
+  const mealThemes = {
+    'Hausmannskost-Woche': [
+      {n:'Wiener Schnitzel mit Kartoffelsalat', ing:['Schweineschnitzel','Erdäpfel','Ei','Mehl','Semmelbrösel','Zwiebel']},
+      {n:'Rindsgulasch mit Semmelknödel', ing:['Rindfleisch','Zwiebel','Paprikapulver','Semmelknödel','Rinderbrühe']},
+      {n:'Kasnocken', ing:['Nockerlteig','Bergkäse','Röstzwiebel']},
+      {n:'Rindsuppe mit Frittaten', ing:['Suppenfleisch','Suppengrün','Pfannkuchen','Schnittlauch']},
+      {n:'Schweinsbraten mit Kraut', ing:['Schweinebraten','Kümmel','Weißkraut','Knödel']},
+      {n:'Faschierte Laibchen mit Erdäpfelpüree', ing:['Faschiertes','Semmel','Ei','Erdäpfel','Milch']},
+      {n:'Kaiserschmarrn', ing:['Mehl','Eier','Milch','Rosinen','Staubzucker']},
+    ],
+    'Asiatische Woche': [
+      {n:'Pad Thai', ing:['Reisnudeln','Ei','Tofu oder Huhn','Tamarindenpaste','Erdnüsse','Sojasprossen']},
+      {n:'Sushi-Bowl', ing:['Sushireis','Lachs','Avocado','Gurke','Nori','Sojasauce']},
+      {n:'Rotes Gemüse-Curry mit Reis', ing:['Kokosmilch','rote Currypaste','Gemüse','Reis']},
+      {n:'Ramen mit Ei', ing:['Ramen-Nudeln','Ei','Miso-Paste','Frühlingszwiebel','Nori']},
+      {n:'Frühlingsrollen & gebratener Reis', ing:['Frühlingsrollenteig','Gemüse','Reis','Sojasauce']},
+      {n:'Teriyaki-Lachs', ing:['Lachsfilet','Teriyakisauce','Sesam','Reis']},
+      {n:'Gyoza-Dumplings', ing:['Dumplingteig','Faschiertes','Kraut','Ingwer','Sojasauce']},
+    ],
+    'Italienische Woche': [
+      {n:'Pasta al Pomodoro', ing:['Spaghetti','Tomaten','Knoblauch','Basilikum']},
+      {n:'Risotto ai Funghi', ing:['Risottoreis','Champignons','Weißwein','Parmesan']},
+      {n:'Lasagne', ing:['Lasagneplatten','Faschiertes','Béchamel','Tomatensauce','Käse']},
+      {n:'Selbstgemachte Pizza', ing:['Pizzateig','Tomatensauce','Mozzarella','Belag nach Wahl']},
+      {n:'Gnocchi mit Pesto', ing:['Gnocchi','Basilikumpesto','Parmesan','Pinienkerne']},
+      {n:'Minestrone', ing:['Suppengemüse','weiße Bohnen','Tomaten','Nudeln']},
+      {n:'Saltimbocca alla Romana', ing:['Kalbsschnitzel','Rohschinken','Salbei','Weißwein']},
+    ],
+    'Vegetarische Woche': [
+      {n:'Linsen-Curry', ing:['rote Linsen','Kokosmilch','Currypulver','Zwiebel']},
+      {n:'Gemüseauflauf', ing:['Saisongemüse','Béchamel','Käse']},
+      {n:'Falafel mit Joghurtsauce', ing:['Kichererbsen','Petersilie','Knoblauch','Joghurt']},
+      {n:'Ofengemüse mit Couscous', ing:['buntes Gemüse','Couscous','Olivenöl','Zitrone']},
+      {n:'Kürbisrisotto', ing:['Kürbis','Risottoreis','Parmesan','Salbei']},
+      {n:'Veggie-Burger', ing:['Kichererbsenpatty','Burgerbrötchen','Salat','Tomate']},
+      {n:'Ratatouille', ing:['Zucchini','Aubergine','Paprika','Tomaten','Kräuter']},
+    ],
+    'Grill-Woche': [
+      {n:'Gegrillte Hendlspieße', ing:['Hühnerbrust','Paprika','Zwiebel','Marinade']},
+      {n:'Burger vom Grill', ing:['Faschiertes','Burgerbrötchen','Käse','Salat']},
+      {n:'Maiskolben & Kotelett', ing:['Maiskolben','Schweinskotelett','Gewürzmischung']},
+      {n:'Bratwurst mit Kartoffelsalat', ing:['Bratwurst','Erdäpfel','Senf']},
+      {n:'Gegrillter Lachs mit Gemüsespießen', ing:['Lachsfilet','Zucchini','Paprika','Zitrone']},
+      {n:'Halloumi-Gemüsespieße', ing:['Halloumi','Paprika','Zucchini','Zwiebel']},
+      {n:'Pulled-Pork-Sandwich', ing:['Schweinsschulter','BBQ-Sauce','Brötchen','Krautsalat']},
+    ],
+    'Resteverwertung-Woche': [
+      {n:'Bratkartoffeln mit Resten', ing:['gekochte Erdäpfel','Speck','Zwiebel']},
+      {n:'Auflauf aus Kühlschrankresten', ing:['Nudeln oder Reis','Restgemüse','Käse']},
+      {n:'Gemüsesuppe aus Resten', ing:['Gemüsereste','Brühe','Suppennudeln']},
+      {n:'Fried Rice mit Resten', ing:['gekochter Reis','Ei','Gemüsereste','Sojasauce']},
+      {n:'Frittata mit Resten', ing:['Eier','Restgemüse','Käse']},
+      {n:'Wraps mit Resten', ing:['Tortillas','Restfleisch oder -gemüse','Sauce']},
+      {n:'Brotaufstrich-Buffet', ing:['verschiedenes Brot','Käse','Aufstriche']},
+    ],
+    'Mediterrane Woche': [
+      {n:'Griechischer Salat mit Fladenbrot', ing:['Tomaten','Gurke','Feta','Oliven','Fladenbrot']},
+      {n:'Hummus-Teller', ing:['Kichererbsen','Tahin','Zitrone','Gemüsesticks']},
+      {n:'Gefüllte Paprika', ing:['Paprika','Reis','Faschiertes','Tomatensauce']},
+      {n:'Souvlaki-Spieße', ing:['Schweinefleisch','Zitrone','Oregano','Pitabrot']},
+      {n:'Paella', ing:['Reis','Meeresfrüchte','Safran','Paprika']},
+      {n:'Auberginenmoussaka', ing:['Auberginen','Faschiertes','Béchamel']},
+      {n:'Caprese mit Focaccia', ing:['Tomaten','Mozzarella','Basilikum','Focaccia']},
+    ],
+    'Fisch-Woche': [
+      {n:'Backfisch mit Remoulade', ing:['Fischfilet','Panade','Remoulade']},
+      {n:'Lachs-Pasta', ing:['Lachsfilet','Sahne','Pasta','Dill']},
+      {n:'Fischcurry', ing:['Fischfilet','Kokosmilch','Currypaste','Reis']},
+      {n:'Gebratener Zander mit Gemüse', ing:['Zanderfilet','Saisongemüse']},
+      {n:'Fish Tacos', ing:['Fischfilet','Tortillas','Krautsalat','Limette']},
+      {n:'Garnelen-Risotto', ing:['Garnelen','Risottoreis','Weißwein']},
+      {n:'Fischsuppe', ing:['gemischter Fisch','Suppengemüse','Weißwein']},
+    ],
+    'Street-Food-Woche': [
+      {n:'Döner-Teller', ing:['Hühnerfleisch','Fladenbrot','Salat','Sauce']},
+      {n:'Tacos', ing:['Tortillas','Faschiertes','Salsa','Käse']},
+      {n:'Bao Buns', ing:['Baoteig','Schweinebauch','Gurke','Hoisinsauce']},
+      {n:'Loaded Fries', ing:['Pommes','Käse','Speck','Sauce']},
+      {n:'Falafel-Wrap', ing:['Falafel','Fladenbrot','Salat','Tahinsauce']},
+      {n:'Currywurst mit Pommes', ing:['Bratwurst','Currysauce','Pommes']},
+      {n:'Quesadillas', ing:['Tortillas','Käse','Gemüse','Salsa']},
+    ],
+    'Suppen & Eintöpfe-Woche': [
+      {n:'Erdäpfelgulasch', ing:['Erdäpfel','Zwiebel','Paprikapulver','Wurst']},
+      {n:'Linsensuppe', ing:['Linsen','Suppengemüse','Essig']},
+      {n:'Kürbiscremesuppe', ing:['Kürbis','Gemüsebrühe','Sahne']},
+      {n:'Chili con Carne', ing:['Faschiertes','Kidneybohnen','Tomaten','Chili']},
+      {n:'Bohneneintopf', ing:['weiße Bohnen','Speck','Suppengemüse']},
+      {n:'Gerstensuppe', ing:['Gerste','Suppengemüse','Rindfleisch']},
+      {n:'Kartoffel-Lauch-Suppe', ing:['Erdäpfel','Lauch','Gemüsebrühe']},
+    ],
+  };
+
+  const themeNames = Object.keys(mealThemes);
+  let currentTheme = themeNames[0];
+  let currentWeek = mealThemes[currentTheme].map(d=>d.n);
+  let dishIngredients = {};
+  function rebuildIngredientLookup(){
+    dishIngredients = {};
+    themeNames.forEach(t => mealThemes[t].forEach(d => { dishIngredients[d.n] = d.ing; }));
+  }
+  rebuildIngredientLookup();
+
+  const themeSelect = document.getElementById('themeSelect');
+  themeNames.forEach(t=>{
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    themeSelect.appendChild(opt);
+  });
+  themeSelect.value = currentTheme;
+  themeSelect.onchange = ()=>{
+    currentTheme = themeSelect.value;
+    currentWeek = mealThemes[currentTheme].map(d=>d.n);
+    renderMealRow();
+  };
+
+  function renderMealRow(){
+    const mealRow = document.getElementById('mealRow');
+    mealRow.innerHTML = '';
+    days.forEach((d,i)=>{
+      const col = document.createElement('div');
+      col.className = 'meal-day';
+      const sel = document.createElement('select');
+      themeNames.forEach(t=>{
+        const og = document.createElement('optgroup');
+        og.label = t;
+        mealThemes[t].forEach(dish=>{
+          const opt = document.createElement('option');
+          opt.value = dish.n; opt.textContent = dish.n;
+          if(dish.n === currentWeek[i]) opt.selected = true;
+          og.appendChild(opt);
+        });
+        sel.appendChild(og);
+      });
+      const dishLabel = document.createElement('div');
+      dishLabel.className = 'dish';
+      dishLabel.textContent = currentWeek[i];
+      sel.onchange = ()=>{ currentWeek[i] = sel.value; dishLabel.textContent = sel.value; };
+      const line = document.createElement('div');
+      line.className = 'dish-line';
+      const plus = document.createElement('button');
+      plus.className = 'plus-btn'; plus.textContent = '+';
+      plus.title = 'Zutaten zur Einkaufsliste hinzufügen';
+      plus.onclick = ()=> addDishToShopping(currentWeek[i]);
+      col.innerHTML = `<div class="dname">${d}</div>`;
+      line.appendChild(dishLabel); line.appendChild(plus);
+      col.appendChild(line);
+      col.appendChild(sel);
+      mealRow.appendChild(col);
+    });
+  }
+  renderMealRow();
+
+  function randomizeWeek(){
+    const t = themeNames[Math.floor(Math.random()*themeNames.length)];
+    currentTheme = t;
+    currentWeek = mealThemes[t].map(d=>d.n);
+    themeSelect.value = t;
+    renderMealRow();
+  }
+
+  function addDish(){
+    const nameInput = document.getElementById('newDishName');
+    const ingInput = document.getElementById('newDishIng');
+    const name = nameInput.value.trim();
+    const ing = ingInput.value.split(',').map(s=>s.trim()).filter(Boolean);
+    if(!name || ing.length===0) return;
+    mealThemes[currentTheme].push({n:name, ing:ing});
+    rebuildIngredientLookup();
+    renderMealRow();
+    nameInput.value=''; ingInput.value='';
+  }
+
+  /* ---------- Einkaufsliste: Zusammenfassen, Kategorien, Geschäfte ---------- */
+  const STORES = ['Billa','Eurospar','Hofer','Lidl'];
+  const STORE_COLORS = {Billa:'var(--berry)', Eurospar:'var(--sage)', Hofer:'var(--sky)', Lidl:'var(--amber)'};
+  const CATEGORY_ORDER = ['Obst & Gemüse','Fleisch, Fisch & Wurst','Milchprodukte & Eier','Backwaren & Getreide','Gewürze & Sonstiges','Getränke','Sonstiges'];
+  const CATEGORY_KEYWORDS = {
+    'Obst & Gemüse': ['apfel','äpfel','tomate','gurke','zwiebel','knoblauch','paprika','zucchini','aubergine','kartoffel','erdäpfel','karotte','möhre','salat','kraut','kürbis','pilz','champignon','zitrone','limette','avocado','banane','beere','kräuter','petersilie','basilikum','schnittlauch','gemüse','obst','frühlingszwiebel','sprossen','ingwer','mais','oliven'],
+    'Fleisch, Fisch & Wurst': ['fleisch','schnitzel','faschiert','rind','schwein','huhn','hühner','speck','wurst','schinken','lachs','fisch','garnele','zander','bratwurst','kotelett'],
+    'Milchprodukte & Eier': ['milch','käse','joghurt','sahne','butter','ei','eier','feta','mozzarella','parmesan'],
+    'Backwaren & Getreide': ['mehl','brot','semmel','nudel','pasta','reis','couscous','teig','gnocchi','knödel','brösel','tortilla','fladenbrot','pita','pizza','baoteig'],
+    'Gewürze & Sonstiges': ['salz','pfeffer','gewürz','öl','essig','zucker','honig','sauce','paste','currypulver','paprikapulver','sojasauce','brühe','hoisin','tahin'],
+    'Getränke': ['wein','saft','wasser','limonade','bier'],
+  };
+  function categorize(name){
+    const n = name.toLowerCase();
+    for(const cat of CATEGORY_ORDER){
+      const kws = CATEGORY_KEYWORDS[cat];
+      if(kws && kws.some(k=> n.includes(k))) return cat;
+    }
+    return 'Sonstiges';
+  }
+  const NORMALIZE_MAP = {
+    'ei':'Eier','eier':'Eier',
+    'zwiebel':'Zwiebeln','zwiebeln':'Zwiebeln','frühlingszwiebel':'Frühlingszwiebeln',
+    'erdapfel':'Erdäpfel','erdäpfel':'Erdäpfel','kartoffel':'Erdäpfel','kartoffeln':'Erdäpfel','gekochte erdäpfel':'Erdäpfel',
+    'tomate':'Tomaten','tomaten':'Tomaten',
+    'karotte':'Karotten','karotten':'Karotten','möhre':'Karotten','möhren':'Karotten',
+    'zitrone':'Zitronen','zitronen':'Zitronen',
+    'gurke':'Gurken','gurken':'Gurken',
+    'paprika':'Paprika',
+    'champignon':'Champignons','champignons':'Champignons','pilz':'Champignons','pilze':'Champignons',
+  };
+  function normalizeName(raw){
+    const key = raw.trim().toLowerCase();
+    if(NORMALIZE_MAP[key]) return NORMALIZE_MAP[key];
+    return raw.trim();
+  }
+
+  let shopState = [];
+  let storeFilter = 'Alle';
+
+  function addToShop(rawName){
+    const canonical = normalizeName(rawName);
+    const key = canonical.toLowerCase();
+    let item = shopState.find(i=>i.key===key);
+    if(item){ item.count++; }
+    else{ shopState.push({key, name:canonical, count:1, category:categorize(canonical), store:null, done:false}); }
+    renderShopList();
+  }
+
+  function toggleShopDone(key){
+    const item = shopState.find(i=>i.key===key);
+    if(item) item.done = !item.done;
+    renderShopList();
+  }
+  function setItemStore(key, store){
+    const item = shopState.find(i=>i.key===key);
+    if(item) item.store = (item.store===store) ? null : store;
+    renderShopList();
+  }
+  function setStoreFilter(store){
+    storeFilter = store;
+    renderShopList();
+  }
+
+  function renderShopList(){
+    const tabs = document.getElementById('storeTabs');
+    tabs.innerHTML = ['Alle', ...STORES].map(s=>
+      `<button class="${s===storeFilter?'active':''}" onclick="setStoreFilter('${s}')">${s}</button>`
+    ).join('');
+
+    const container = document.getElementById('shopListContainer');
+    const items = storeFilter==='Alle' ? shopState : shopState.filter(i=> i.store===storeFilter);
+    if(items.length===0){
+      container.innerHTML = `<div class="empty-note">${storeFilter==='Alle' ? 'Einkaufsliste ist leer.' : 'Noch keine Artikel für '+storeFilter+' zugeordnet.'}</div>`;
+      return;
+    }
+    let html = '';
+    CATEGORY_ORDER.forEach(cat=>{
+      const catItems = items.filter(i=>i.category===cat);
+      if(catItems.length===0) return;
+      html += `<div class="cat-head">${cat}</div>`;
+      catItems.forEach(i=>{
+        html += `<div class="shop-row ${i.done?'done':''}">
+          <span class="checkbox" onclick="toggleShopDone('${i.key}')"></span>
+          <span class="shop-name" onclick="toggleShopDone('${i.key}')">${i.name}${i.count>1?' ×'+i.count:''}</span>
+          <span class="store-chips">${STORES.map(s=>`<button class="store-chip ${i.store===s?'active':''}" style="--sc:${STORE_COLORS[s]}" onclick="setItemStore('${i.key}','${s}')" title="${s}">${s[0]}</button>`).join('')}</span>
+        </div>`;
+      });
+    });
+    container.innerHTML = html;
+  }
+  renderShopList();
+
+  function addItem(){
+    const input = document.getElementById('shopInput');
+    const val = input.value.trim();
+    if(!val) return;
+    addToShop(val);
+    input.value = '';
+  }
+
+  function addDishToShopping(dishName){
+    const ing = dishIngredients[dishName] || [];
+    ing.forEach(item=> addToShop(item));
+    const flash = document.getElementById('shopFlash');
+    flash.classList.add('show');
+    setTimeout(()=> flash.classList.remove('show'), 1800);
+  }
+
+  function startShopping(){
+    const list = shopState.filter(i=>!i.done);
+    if(list.length===0){ alert('Die Einkaufsliste ist leer.'); return; }
+    let msg = 'Bitte prüfe für mein Familienboard, wo es aktuell Angebote gibt, und schlage mir 1-2 Geschäfte (Billa, Eurospar, Hofer, Lidl in Marchtrenk) vor, mit denen ich alles abdecke:\n\n';
+    CATEGORY_ORDER.forEach(cat=>{
+      const catItems = list.filter(i=>i.category===cat);
+      if(catItems.length===0) return;
+      msg += `${cat}:\n`;
+      catItems.forEach(i=> msg += `- ${i.name}${i.count>1?' ×'+i.count:''}\n`);
+    });
+    navigator.clipboard.writeText(msg).then(()=>{
+      document.getElementById('shopPrompt').textContent = 'In die Zwischenablage kopiert! Füge das im Chat bei Claude ein – du bekommst dann Angebots-Check und einen Vorschlag, mit 1-2 Geschäften auszukommen.';
+    }).catch(()=>{
+      document.getElementById('shopPrompt').textContent = msg;
+    });
+    document.getElementById('shopPrompt').classList.add('show');
+  }
+
+  /* ---------- Gemeinsamer Haushalt (einfache Liste) ---------- */
+  const choreItems = ['Altpapier rausbringen','Küche kehren','Blumen gießen'];
+  function renderChoreList(){
+    const ul = document.getElementById('choreList');
+    choreItems.forEach(text=>{
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="checkbox"></span><span>${text}</span>`;
+      li.onclick = ()=> li.classList.toggle('done');
+      ul.appendChild(li);
+    });
+  }
+  renderChoreList();
+  function addChore(){
+    const input = document.getElementById('choreInput');
+    const val = input.value.trim();
+    if(!val) return;
+    const ul = document.getElementById('choreList');
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="checkbox"></span><span>${val}</span>`;
+    li.onclick = ()=> li.classList.toggle('done');
+    ul.appendChild(li);
+    input.value = '';
+  }
+
+  /* ---------- Gäste-WLAN QR (Test) ---------- */
+  try{
+    new QRCode(document.getElementById('guestWifiQr'), {
+      text: 'WIFI:T:WPA;S:Familie-Gast;P:Test1234;;',
+      width: 130, height: 130,
+      colorDark: '#232821', colorLight: '#F6F4EA'
+    });
+  }catch(e){ document.getElementById('guestWifiQr').textContent = 'QR-Code konnte nicht geladen werden.'; }
+
+  /* ---------- Route planen ---------- */
+  function openRoute(){
+    const from = document.getElementById('routeFrom').value.trim() || 'Zuhause';
+    const to = document.getElementById('routeTo').value.trim();
+    if(!to) return;
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}&travelmode=driving`;
+    window.open(url, '_blank');
+  }
+
+  /* ---------- Regenradar: läuft komplett über das Windy-iframe oben, kein eigener JS-Code nötig ---------- */
+
+  /* ---------- Live-Wetter (Open-Meteo, kostenlos, kein API-Key) ---------- */
+  const HOME_LAT = 48.1833, HOME_LON = 14.1167; // Marchtrenk, Oberösterreich
+  const wcodeMap = (c)=>{
+    if(c===0) return {i:'☀️', t:'Klar'};
+    if([1,2].includes(c)) return {i:'🌤️', t:'Leicht bewölkt'};
+    if(c===3) return {i:'☁️', t:'Bewölkt'};
+    if([45,48].includes(c)) return {i:'🌫️', t:'Nebel'};
+    if([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(c)) return {i:'🌧️', t:'Regen'};
+    if([71,73,75,77,85,86].includes(c)) return {i:'❄️', t:'Schnee'};
+    if([95,96,99].includes(c)) return {i:'⛈️', t:'Gewitter'};
+    return {i:'☁️', t:'Bewölkt'};
+  };
+  const uvLabel = (uv)=>{
+    if(uv<3) return 'niedrig';
+    if(uv<6) return 'mittel';
+    if(uv<8) return 'hoch';
+    if(uv<11) return 'sehr hoch';
+    return 'extrem';
+  };
+
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${HOME_LAT}&longitude=${HOME_LON}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max&hourly=temperature_2m,precipitation_probability,weathercode&timezone=auto&forecast_days=7`)
+    .then(r=>r.json())
+    .then(d=>{
+      const cw = d.current_weather;
+      const cur = wcodeMap(cw.weathercode);
+      document.getElementById('heroIcon').textContent = cur.i;
+      document.getElementById('heroTemp').textContent = Math.round(cw.temperature) + '°';
+      document.getElementById('heroMeta').innerHTML = `${cur.t}<br><b>${Math.round(d.daily.temperature_2m_max[0])}°</b> / ${Math.round(d.daily.temperature_2m_min[0])}° heute<br>Marchtrenk`;
+      document.getElementById('sideTemp').textContent = Math.round(cw.temperature) + '°';
+      document.getElementById('sideCond').textContent = `${cur.t}, ${d.daily.precipitation_probability_max[0]}% Regen`;
+      const uv = d.daily.uv_index_max[0];
+      document.getElementById('uvBadge').textContent = `UV-Index heute: ${uv.toFixed(1)} (${uvLabel(uv)})`;
+
+      const forecastRow = document.getElementById('forecastRow');
+      forecastRow.innerHTML = '';
+      d.daily.time.forEach((dateStr, i)=>{
+        const dow = new Date(dateStr).toLocaleDateString('de-DE', {weekday:'short'});
+        const ic = wcodeMap(d.daily.weathercode[i]).i;
+        forecastRow.innerHTML += `<div class="fc-day"><div class="d">${dow}</div><div class="ic">${ic}</div><div class="t">${Math.round(d.daily.temperature_2m_max[i])}°</div></div>`;
+      });
+
+      /* stündlicher Regen-Ausblick, nächste 10 Stunden ab jetzt */
+      const nowISO = new Date();
+      let startIdx = d.hourly.time.findIndex(t => new Date(t) >= nowISO);
+      if(startIdx < 0) startIdx = 0;
+      const hourlyRow = document.getElementById('hourlyRow');
+      hourlyRow.innerHTML = '';
+      for(let i=startIdx; i<startIdx+10 && i<d.hourly.time.length; i++){
+        const hh = new Date(d.hourly.time[i]).toLocaleTimeString('de-DE', {hour:'2-digit'});
+        const ic = wcodeMap(d.hourly.weathercode[i]).i;
+        const pop = d.hourly.precipitation_probability[i];
+        hourlyRow.innerHTML += `<div class="hr-col"><div class="h">${hh}</div><div class="ic">${ic}</div><div class="p">${pop}%</div></div>`;
+      }
+    })
+    .catch(()=>{
+      document.getElementById('uvBadge').textContent = 'UV-Index aktuell nicht abrufbar';
+      document.getElementById('hourlyRow').innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Regen-Ausblick aktuell nicht abrufbar.</span>';
+    });
+</script>
+</body>
+</html>
