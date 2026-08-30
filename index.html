@@ -368,7 +368,7 @@
           </span>
           <span class="radar-cta-arrow">→</span>
         </a>
-        <h2 style="margin-top:22px;">Regen-Ausblick <span class="tag">stündlich · nächste 12h</span></h2>
+        <h2 style="margin-top:22px;">Regen-Ausblick <span class="tag">stündlich · nächste 24h</span></h2>
         <div class="hourly-row" id="hourlyRow"></div>
       </div>
     </div>
@@ -1152,10 +1152,10 @@
 
   /* ---------- Müllkalender: alle Entsorgungen des nächsten Termins, Popup falls morgen ---------- */
   const TRASH_BIN_STYLE = {
-    'Bioabfall': {cls:'green', label:'Biotonne'},
-    'Altpapier': {cls:'blue', label:'Altpapier'},
-    'Gelber Sack': {cls:'yellow', label:'Gelber Sack'},
-    'Restabfall': {cls:'grey', label:'Restmülltonne'},
+    'Bioabfall': {cls:'green', label:'Biotonne', match:['Bioabfall','Biotonne','Biomüll']},
+    'Altpapier': {cls:'blue', label:'Altpapier', match:['Altpapier','Papiertonne','Papiermüll']},
+    'Gelber Sack': {cls:'yellow', label:'Gelbe Tonne / Gelber Sack', match:['Gelber Sack','Gelbe Tonne','Gelbe Sack']},
+    'Restabfall': {cls:'grey', label:'Restmülltonne', match:['Restabfall','Restmüll','Restmülltonne']},
   };
   let trashWarned = false;
   function updateTrashCard(){
@@ -1199,6 +1199,7 @@
   const uvLabel = (uv)=>{ if(uv<3) return 'niedrig'; if(uv<6) return 'mittel'; if(uv<8) return 'hoch'; if(uv<11) return 'sehr hoch'; return 'extrem'; };
   let rainWarned = false;
 
+  function loadWeather(){
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${HOME_LAT}&longitude=${HOME_LON}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max&hourly=temperature_2m,precipitation_probability,weathercode&timezone=auto&forecast_days=7`)
     .then(r=>r.json())
     .then(d=>{
@@ -1225,7 +1226,7 @@
         const hourlyRow = document.getElementById('hourlyRow');
         hourlyRow.innerHTML = '';
         let firstRainHour = null;
-        for(let i=startIdx; i<startIdx+12 && i<d.hourly.time.length; i++){
+        for(let i=startIdx; i<startIdx+24 && i<d.hourly.time.length; i++){
           const hh = new Date(d.hourly.time[i]).toLocaleTimeString('de-DE', {hour:'2-digit'});
           const ic = wcodeMap(d.hourly.weathercode[i]).i;
           const pop = d.hourly.precipitation_probability[i];
@@ -1246,6 +1247,8 @@
     .catch(()=>{
       document.getElementById('uvBadge').textContent = 'UV-Index aktuell nicht abrufbar';
     });
+  }
+  loadWeather();
 
   /* ---------- Google-Anmeldung & echter Kalender ---------- */
   const GOOGLE_CLIENT_ID = '834201109275-au15o6plrp4iv4a007bcupm7pmhqvia4.apps.googleusercontent.com';
@@ -1256,10 +1259,12 @@
     'Haus - Regelmäßige Wartungen': 'family',
     'Feiertage in Österreich': 'family',
     'Christoph': 1, // Papa
+    'Nadine Hiesl': 0, // Mama
   };
 
   let googleTokenClient = null;
   let googleAccessToken = null;
+  let silentAuthPending = false;
 
   function initGoogle(){
     if(typeof google === 'undefined' || !google.accounts) return;
@@ -1267,8 +1272,11 @@
       client_id: GOOGLE_CLIENT_ID,
       scope: GOOGLE_SCOPES,
       callback: (resp)=>{
+        const wasSilent = silentAuthPending;
+        silentAuthPending = false;
         if(resp.error){
-          document.getElementById('googleStatus').textContent = 'Anmeldung nicht möglich, bitte nochmal versuchen.';
+          // Bei einem stillen Hintergrund-Versuch keine alarmierende Meldung zeigen
+          if(!wasSilent){ document.getElementById('googleStatus').textContent = 'Anmeldung nicht möglich, bitte nochmal versuchen.'; }
           return;
         }
         googleAccessToken = resp.access_token;
@@ -1278,12 +1286,21 @@
       },
     });
     // Stiller Versuch, ohne Klick anzumelden, falls Browser noch bei Google eingeloggt ist
+    silentAuthPending = true;
     googleTokenClient.requestAccessToken({prompt:'none'});
   }
 
   function connectGoogle(){
     if(!googleTokenClient){ document.getElementById('googleStatus').textContent = 'Google-Anmeldung lädt noch, bitte kurz warten und nochmal klicken.'; return; }
+    silentAuthPending = false;
     googleTokenClient.requestAccessToken({prompt:'consent'});
+  }
+
+  // Erneuert den Token im Hintergrund, ohne die Seite neu zu laden oder den Nutzer zu unterbrechen
+  function silentlyRenewToken(){
+    if(!googleTokenClient || silentAuthPending) return;
+    silentAuthPending = true;
+    googleTokenClient.requestAccessToken({prompt:'none'});
   }
 
   async function loadGoogleCalendars(){
@@ -1292,6 +1309,11 @@
       const res = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList', {
         headers:{ Authorization: 'Bearer ' + googleAccessToken }
       });
+      if(res.status === 401){
+        document.getElementById('googleStatus').textContent = 'Anmeldung abgelaufen, wird im Hintergrund erneuert…';
+        silentlyRenewToken();
+        return;
+      }
       const data = await res.json();
       const cals = data.items || [];
 
@@ -1313,8 +1335,9 @@
       const dayStart = new Date(WEEK_START); dayStart.setDate(dayStart.getDate()-7);
       const dayEnd = new Date(WEEK_START); dayEnd.setDate(dayEnd.getDate()+35);
 
-      const TRASH_TYPES = ['Bioabfall','Altpapier','Gelber Sack','Restabfall'];
-      function matchTrash(title){ return TRASH_TYPES.find(t => title.includes(t)); }
+      function matchTrash(title){
+        return Object.keys(TRASH_BIN_STYLE).find(key => TRASH_BIN_STYLE[key].match.some(alias => title.includes(alias)));
+      }
 
       let newEvents = [];
       let newTrash = [];
@@ -1357,9 +1380,12 @@
     }
   }
 
-</script>
-</body>
-</html>
+  /* ---------- Automatische Aktualisierung alle 10 Minuten (kein Seiten-Neuladen, Anmeldung bleibt bestehen) ---------- */
+  setInterval(()=>{
+    loadWeather();
+    if(googleAccessToken) loadGoogleCalendars();
+  }, 10 * 60 * 1000);
+
 </script>
 </body>
 </html>
