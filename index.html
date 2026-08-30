@@ -92,6 +92,23 @@
   }
   .day-note.today .dow{ color: var(--amber-soft); }
   .day-note.today .dom{ color: var(--card); }
+  .day-note.selected:not(.today){ border: 2px solid var(--sky); }
+
+  .week-nav{ display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .week-nav button, .month-nav button{ border:1px solid var(--line); background: var(--card); color: var(--ink); font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; border-radius:999px; padding:6px 14px; cursor:pointer; }
+  .week-nav button:hover, .month-nav button:hover{ background: var(--ink); color: var(--card); }
+  .month-toggle{ margin-left:auto; }
+  #weekLabel{ font-size:12.5px; color: var(--ink-soft); font-family:'IBM Plex Mono', monospace; }
+  .month-nav{ display:flex; align-items:center; justify-content:center; gap:16px; margin: 8px 0 12px; }
+  #monthLabel{ font-family:'Fraunces', serif; font-size:16px; font-weight:600; min-width:160px; text-align:center; }
+  .month-grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; margin-bottom:24px; }
+  .month-grid .mg-head{ text-align:center; font-family:'IBM Plex Mono', monospace; font-size:10px; color: var(--ink-soft); text-transform:uppercase; padding-bottom:4px; }
+  .month-day{ background: var(--card); border-radius:10px; min-height:52px; padding:6px; cursor:pointer; box-shadow: var(--shadow); display:flex; flex-direction:column; gap:3px; }
+  .month-day.other-month{ opacity:.35; }
+  .month-day.today{ background: var(--ink); color: var(--card); }
+  .month-day.selected:not(.today){ border:2px solid var(--sky); }
+  .month-day .mdnum{ font-size:12px; font-weight:600; }
+  .month-day .dots{ display:flex; flex-wrap:wrap; gap:3px; }
 
   .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin: 6px 0 14px; flex-wrap:wrap; gap:6px; }
   .section-head h2{ font-family:'Fraunces', serif; font-size: 21px; font-weight:600; margin:0; }
@@ -116,11 +133,17 @@
   .person-todo li.done .mini-checkbox{ background: var(--sage); border-color: var(--sage); }
   .person-todo li.done .mini-checkbox::after{ opacity:1; }
   .person-todo li.done span.txt{ text-decoration:line-through; color: var(--ink-soft); }
+  .mini-add-row{ margin-top:8px; gap:6px; }
+  .mini-add-row input{ padding:6px 10px; font-size:12px; border-radius:8px; }
+  .mini-add-row button{ padding:0 10px; border-radius:8px; font-size:13px; }
   .filter-note{ font-size:12px; color: var(--ink-soft); margin: 0 0 22px; }
   .filter-note button{ border:none; background:none; color: var(--berry); font-weight:600; cursor:pointer; font-size:12px; padding:0; text-decoration:underline; }
 
   .grid{ display:grid; grid-template-columns: 1.6fr 1fr; gap: 20px; align-items:start; margin-bottom: 28px; }
-  .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; }
+  .grid > *{ min-width: 0; }
+  .grid.grid-balanced{ grid-template-columns: 1fr 1fr; }
+  .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; transition: box-shadow .2s ease; overflow:hidden; }
+  .card:hover{ box-shadow: 0 2px 4px rgba(35,40,33,0.08), 0 12px 26px -10px rgba(35,40,33,0.22); }
   .card h2{ font-family:'Fraunces', serif; font-size: 19px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
   .card h2 .tag{ font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:11px; color: var(--ink-soft); }
 
@@ -152,6 +175,9 @@
   .bin{ width:46px; height:54px; border-radius: 6px 6px 3px 3px; flex-shrink:0; position:relative; }
   .bin::before{ content:''; position:absolute; top:-6px; left:4px; right:4px; height:8px; border-radius:3px; background:inherit; filter:brightness(0.85);}
   .bin.yellow{ background: var(--amber); }
+  .bin.green{ background: var(--sage); }
+  .bin.blue{ background: var(--sky); }
+  .bin.grey{ background: #6b6f66; }
   .trash-row b{ font-size: 15px; }
   .trash-row span{ font-size: 12.5px; color: var(--ink-soft); display:block; margin-top:2px;}
 
@@ -161,6 +187,13 @@
   .fc-day .d{ font-family:'IBM Plex Mono', monospace; text-transform:uppercase; font-size:10px;}
   .fc-day .ic{ font-size:15px; margin-top:2px; }
   .fc-day .t{ font-size: 12.5px; color: var(--ink); font-weight:600; margin-top:2px; }
+  .hourly-row{ display:flex; gap:8px; overflow-x:auto; margin-top:12px; padding-top:14px; border-top:1px solid var(--line); }
+  .hr-col{ text-align:center; font-size:11.5px; color: var(--ink-soft); flex-shrink:0; min-width:52px; background: var(--board); border-radius:10px; padding:8px 6px; transition: background .3s ease, transform .3s ease; }
+  .hr-col.active{ background: var(--sky); color: var(--card); transform: scale(1.08); }
+  .hr-col.active .p{ color: var(--card); }
+  .hr-col .h{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; }
+  .hr-col .ic{ font-size:16px; margin:4px 0; }
+  .hr-col .p{ font-size:12px; font-weight:600; color: var(--sky); }
 
   .todo-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
   .todo-list{ list-style:none; margin:0; padding:0; }
@@ -219,18 +252,19 @@
   .add-dish-form button:hover{ background: var(--sage); }
   .add-dish-hint{ width:100%; font-size:11.5px; color: var(--ink-soft); }
 
-  #radarMap{ height:280px; border-radius:14px; overflow:hidden; }
+  .radar-cta{ display:flex; align-items:center; gap:16px; background: var(--board); border-radius:14px; padding:18px 20px; text-decoration:none; color: var(--ink); transition: background .15s ease, transform .15s ease; }
+  .radar-cta:hover{ background: var(--sky-soft); transform: translateY(-1px); }
+  .radar-cta-icon{ font-size:32px; flex-shrink:0; }
+  .radar-cta-text{ flex:1; display:flex; flex-direction:column; gap:4px; }
+  .radar-cta-text b{ font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
+  .radar-cta-text span{ font-size:12.5px; color: var(--ink-soft); line-height:1.4; }
+  .radar-cta-arrow{ font-size:20px; color: var(--sky); flex-shrink:0; }
   .radar-note{ font-size:12px; color: var(--ink-soft); margin-top:10px; }
   .radar-slider-row{ display:flex; align-items:center; gap:10px; margin-top:12px; }
   .radar-play{ border:none; background: var(--sky); color: var(--card); width:30px; height:30px; border-radius:50%; font-size:12px; cursor:pointer; flex-shrink:0; }
   .radar-play:hover{ background: var(--ink); }
   .radar-slider-row input[type=range]{ flex:1; accent-color: var(--sky); }
   .radar-time{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--ink-soft); width:80px; text-align:right; flex-shrink:0; }
-  .hourly-row{ display:flex; gap:8px; overflow-x:auto; margin-top:12px; padding-top:14px; border-top:1px solid var(--line); }
-  .hr-col{ text-align:center; font-size:11.5px; color: var(--ink-soft); flex-shrink:0; min-width:52px; background: var(--board); border-radius:10px; padding:8px 6px; }
-  .hr-col .h{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; }
-  .hr-col .ic{ font-size:16px; margin:4px 0; }
-  .hr-col .p{ font-size:12px; font-weight:600; color: var(--sky); }
 
   .wifi-card{ text-align:center; }
   #guestWifiQr{ display:flex; justify-content:center; margin: 8px 0 10px; }
@@ -239,19 +273,54 @@
 
   .route-form label{ font-size:11.5px; color: var(--ink-soft); display:block; margin-bottom:4px; }
   .route-form input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); margin-bottom:10px; }
-  .route-form button{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 10px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; }
-  .route-form button:hover{ background: var(--ink); }
+  .route-external-btn{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 10px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:10px; }
+  .route-external-btn:hover{ background: var(--ink); }
   .route-note{ font-size:11.5px; color: var(--ink-soft); margin-top:10px; }
+  .route-note a{ color: var(--sky); font-weight:600; }
+  .route-frame{ width:100%; height:220px; border:none; border-radius:12px; margin-top:10px; }
 
   footer{ text-align:center; margin-top: 30px; font-size: 12px; color: var(--ink-soft); }
 
   @media (max-width: 860px){
     .grid{ grid-template-columns: 1fr; }
-    .week-strip{ grid-template-columns: repeat(4, 1fr); }
-    .day-note:nth-child(n+5){ display:none; }
     .todo-row{ grid-template-columns: 1fr; }
     .family-grid{ grid-template-columns: repeat(2, 1fr); }
-    .meal-row{ grid-template-columns: repeat(2, 1fr); }
+    .month-grid{ gap:4px; }
+    .month-day{ min-height:40px; padding:4px; }
+    .month-day .mdnum{ font-size:11px; }
+  }
+  @media (max-width: 640px){
+    body{ padding: 12px; }
+    .card{ padding: 16px 16px; }
+    .hero{ gap:14px; }
+    .hero-date h1{ font-size: 30px; }
+    .weather-chip{ padding: 10px 16px; gap:10px; width:100%; justify-content:space-between; }
+    .google-bar{ flex-direction:column; align-items:flex-start; gap:6px; }
+    .google-btn{ width:100%; }
+    .week-strip{
+      display:flex; overflow-x:auto; gap:8px; padding-bottom:4px; scroll-snap-type:x proximity;
+      grid-template-columns:none;
+    }
+    .day-note{ min-width:76px; scroll-snap-align:start; }
+    .week-nav{ gap:6px; }
+    .week-nav button, .month-nav button{ padding:6px 10px; font-size:11.5px; }
+    .month-toggle{ margin-left:0; }
+    .family-grid{ grid-template-columns: 1fr; }
+    .meal-row{
+      display:flex; overflow-x:auto; gap:8px; scroll-snap-type:x proximity; padding-bottom:4px;
+      grid-template-columns:none;
+    }
+    .meal-day{ min-width:150px; scroll-snap-align:start; }
+    .add-dish-form input.name, .add-dish-form input.ing{ min-width: 100%; }
+    .radar-cta{ flex-wrap:wrap; }
+    .route-frame{ height:180px; }
+    .month-grid{ grid-template-columns: repeat(7, minmax(30px,1fr)); }
+    .month-day .dots{ display:none; }
+    .month-day.today .dots, .month-day.selected .dots{ display:flex; }
+    .store-tabs button{ padding:6px 10px; font-size:11px; }
+    .store-chip{ width:24px; height:24px; }
+    .del-x{ font-size:20px; padding:0 8px; }
+    .checkbox, .mini-checkbox{ width:22px; height:22px; }
   }
   @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
 
@@ -264,6 +333,13 @@
   .gate-box button:hover{ background: var(--sage); }
   .gate-error{ color: var(--berry); font-size:12px; margin: 10px 0 0; display:none; }
   .gate-error.show{ display:block; }
+
+  .rain-warn-overlay{ position:fixed; inset:0; background: rgba(35,40,33,0.55); display:none; align-items:center; justify-content:center; z-index:998; padding:20px; }
+  .rain-warn-box{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 26px; text-align:center; width:100%; max-width:320px; }
+  .rain-warn-icon{ font-size:38px; margin-bottom:10px; }
+  .rain-warn-box p{ font-size:14px; color: var(--ink); line-height:1.5; margin: 0 0 18px; }
+  .rain-warn-box button{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:14px; cursor:pointer; }
+  .rain-warn-box button:hover{ background: var(--ink); }
 
   .google-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin: 14px 0 6px; }
   .google-btn{ border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
@@ -282,6 +358,13 @@
     <input type="password" id="gateInput" inputmode="numeric" placeholder="Code" autofocus>
     <button onclick="checkGate()">Weiter</button>
     <p class="gate-error" id="gateError">Falscher Code, bitte nochmal versuchen.</p>
+  </div>
+</div>
+<div class="rain-warn-overlay" id="rainWarnOverlay">
+  <div class="rain-warn-box">
+    <div class="rain-warn-icon">🌧️</div>
+    <p id="rainWarnText"></p>
+    <button onclick="closeRainWarn()">Verstanden</button>
   </div>
 </div>
 <div class="wrap" id="mainWrap" style="display:none;">
@@ -307,7 +390,19 @@
   </div>
   <div id="calendarDebug" class="calendar-debug"></div>
 
+  <div class="week-nav">
+    <button onclick="shiftWeek(-1)">‹ Woche</button>
+    <span id="weekLabel"></span>
+    <button onclick="shiftWeek(1)">Woche ›</button>
+    <button class="month-toggle" onclick="toggleMonthView()" id="monthToggleBtn">📅 Monat</button>
+  </div>
   <div class="week-strip" id="weekStrip"></div>
+  <div class="month-nav" id="monthNav" style="display:none;">
+    <button onclick="shiftMonth(-1)">‹</button>
+    <span id="monthLabel"></span>
+    <button onclick="shiftMonth(1)">›</button>
+  </div>
+  <div class="month-grid" id="monthGrid" style="display:none;"></div>
 
   <div class="section-head"><h2>Familie</h2><span class="tag">antippen filtert den Kalender darunter</span></div>
   <div class="family-grid" id="familyGrid"></div>
@@ -330,8 +425,8 @@
       <div class="card trash-card">
         <h2>Müllkalender</h2>
         <div class="trash-row">
-          <div class="bin yellow"></div>
-          <div><b>Gelbe Tonne</b><span>morgen früh · bitte heute Abend rausstellen</span></div>
+          <div class="bin yellow" id="trashBinIcon"></div>
+          <div><b id="trashLabel">Gelbe Tonne</b><span id="trashSub">Beispiel – wird nach Google-Anmeldung live</span></div>
         </div>
       </div>
 
@@ -367,15 +462,20 @@
 
   <div class="grid">
     <div class="card">
-      <h2>Regenradar <span class="tag">live · Windy</span></h2>
-      <iframe id="radarFrame" width="100%" height="360" frameborder="0" style="border-radius:14px; border:none;"
-        src="https://embed.windy.com/embed2.html?lat=48.183&lon=14.117&detailLat=48.183&detailLon=14.117&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1">
-      </iframe>
-      <p class="radar-note">Interaktive Karte mit Zeitleiste unten im Fenster (funktioniert auch am Handy) – zeigt Marchtrenk.</p>
+      <h2>Regenradar</h2>
+      <a href="https://www.wetteronline.at/regenradar/marchtrenk?mode=interactive&wrp=periodPrognose24h" target="_blank" class="radar-cta">
+        <span class="radar-cta-icon">🌧️</span>
+        <span class="radar-cta-text">
+          <b>Live-Regenradar für Marchtrenk ansehen</b>
+          <span>Öffnet wetteronline.at in einem neuen Tab – interaktiv, mit Zeitregler für die 24h-Prognose. Funktioniert zuverlässig auf jedem Gerät.</span>
+        </span>
+        <span class="radar-cta-arrow">→</span>
+      </a>
 
-      <h2 style="margin-top:22px;">Regen-Ausblick <span class="tag">stündlich · nächste 10h</span></h2>
+      <h2 style="margin-top:22px;">Regen-Ausblick <span class="tag">stündlich bis Tagesende</span></h2>
       <div class="hourly-row" id="hourlyRow"></div>
     </div>
+
     <div class="side-stack">
       <div class="card wifi-card">
         <h2 style="justify-content:center;">Gäste-WLAN</h2>
@@ -383,18 +483,23 @@
         <div id="guestWifiQr"></div>
         <div class="wifi-meta">Netzwerk: <b>Familie-Gast</b><br>Passwort: <b>Test1234</b></div>
       </div>
+
       <div class="card">
         <h2>Route planen</h2>
         <div class="route-form">
           <label>Von</label>
-          <input id="routeFrom" type="text" value="Zuhause">
+          <input id="routeFrom" type="text" value="Marchtrenk">
           <label>Nach</label>
-          <input id="routeTo" type="text" placeholder="Ziel eingeben…">
-          <button onclick="openRoute()">Route &amp; Stau in Google Maps prüfen</button>
+          <input id="routeTo" type="text" placeholder="Ziel eingeben und Enter drücken…">
         </div>
-        <p class="route-note">Öffnet Google Maps mit aktueller Verkehrslage – kostenlos, ohne eigenen API-Key.</p>
+        <p class="route-note" id="routeHint">Adresse eingeben und Enter drücken für eine Vorschau.</p>
+        <div id="routePreviewWrap" style="display:none;">
+          <iframe id="routeFrame" class="route-frame" loading="lazy"></iframe>
+          <button class="route-external-btn" onclick="openRouteExternal()">🗺️ In Google Maps öffnen (mit Live-Stau)</button>
+        </div>
       </div>
     </div>
+  </div>
   </div>
 
   <div class="card" style="margin-top:20px;">
@@ -448,23 +553,107 @@
     { name:'Laurin', initial:'L', color:'var(--amber)' },
   ];
 
-  const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
-  const dayEvents = [ [0,2], [1], [2,3], [0,1,3], [3], [], [1,2] ];
-  const todayIdx = 3;
+  function toDateStr(d){
+    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+  function parseDateStr(s){
+    const [y,m,d] = s.split('-').map(Number);
+    return new Date(y, m-1, d);
+  }
+  function getMonday(d){
+    const x = new Date(d);
+    const day = x.getDay();
+    const diff = (day===0 ? -6 : 1-day);
+    x.setDate(x.getDate()+diff);
+    x.setHours(0,0,0,0);
+    return x;
+  }
+  const TODAY = new Date();
+  const TODAY_STR = toDateStr(TODAY);
+  let WEEK_START = getMonday(TODAY);
+  let viewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+
+  function weekDatesFor(start){
+    return [0,1,2,3,4,5,6].map(i=>{ const d=new Date(start); d.setDate(d.getDate()+i); return d; });
+  }
+  let weekDates = weekDatesFor(WEEK_START);
+
+  let selectedDate = TODAY_STR;
+
+  // allEvents: alle geladenen Termine (Beispieldaten bis zur Google-Anmeldung), jeweils mit Datum + personal-Flag.
+  let allEvents = [
+    { date: TODAY_STR, time:'08:00', title:'Schulbeginn Matteo', who:[2], color:'var(--sage)', personal:true },
+    { date: TODAY_STR, time:'14:30', title:'Zahnarzttermin Laurin', who:[1,3], color:'var(--amber)', personal:false },
+    { date: TODAY_STR, time:'18:00', title:'Fußballtraining', who:[3], color:'var(--amber)', personal:true },
+  ];
+  let trashEvents = [];
 
   const weekStrip = document.getElementById('weekStrip');
-  days.forEach((d,i)=>{
-    const el = document.createElement('div');
-    el.className = 'day-note' + (i===todayIdx ? ' today' : '');
-    el.innerHTML = `<div class="dow">${d}</div><div class="dom">${24+i}</div><div class="dots">${dayEvents[i].map(p=>`<span class="dot" style="background:${people[p].color}"></span>`).join('')}</div>`;
-    weekStrip.appendChild(el);
-  });
+  const weekLabel = document.getElementById('weekLabel');
+  function renderWeekStrip(){
+    weekDates = weekDatesFor(WEEK_START);
+    const endD = weekDates[6];
+    weekLabel.textContent = `${weekDates[0].toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})}–${endD.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})}`;
+    weekStrip.innerHTML = '';
+    weekDates.forEach(d=>{
+      const dStr = toDateStr(d);
+      const dayPersons = [...new Set(allEvents.filter(e=>e.date===dStr).flatMap(e=>e.who))];
+      const el = document.createElement('div');
+      el.className = 'day-note' + (dStr===TODAY_STR ? ' today' : '') + (dStr===selectedDate ? ' selected' : '');
+      el.innerHTML = `<div class="dow">${d.toLocaleDateString('de-DE',{weekday:'short'})}</div><div class="dom">${d.getDate()}</div><div class="dots">${dayPersons.map(p=>`<span class="dot" style="background:${people[p].color}"></span>`).join('')}</div>`;
+      el.onclick = ()=> selectDate(dStr);
+      weekStrip.appendChild(el);
+    });
+  }
+  function shiftWeek(dir){
+    WEEK_START.setDate(WEEK_START.getDate() + dir*7);
+    renderWeekStrip();
+  }
+  function selectDate(dStr){
+    selectedDate = dStr;
+    renderWeekStrip();
+    if(document.getElementById('monthGrid').style.display !== 'none') renderMonthGrid();
+    renderAgenda();
+    renderFamilyGrid();
+  }
+  renderWeekStrip();
 
-  const agenda = [
-    { time:'08:00', title:'Schulbeginn Matteo', who:[2], color:'var(--sage)' },
-    { time:'14:30', title:'Zahnarzttermin Laurin', who:[1,3], color:'var(--amber)' },
-    { time:'18:00', title:'Fußballtraining', who:[3], color:'var(--amber)' },
-  ];
+  const monthGrid = document.getElementById('monthGrid');
+  const monthNav = document.getElementById('monthNav');
+  const monthLabel = document.getElementById('monthLabel');
+  function toggleMonthView(){
+    const showing = monthGrid.style.display !== 'none';
+    monthGrid.style.display = showing ? 'none' : 'grid';
+    monthNav.style.display = showing ? 'none' : 'flex';
+    weekStrip.style.display = showing ? 'grid' : 'none';
+    document.querySelector('.week-nav > button:first-child').style.display = showing ? '' : 'none';
+    document.querySelector('.week-nav > button:nth-child(3)').style.display = showing ? '' : 'none';
+    weekLabel.style.display = showing ? '' : 'none';
+    document.getElementById('monthToggleBtn').textContent = showing ? '📅 Monat' : '🗓️ Woche';
+    if(!showing) renderMonthGrid();
+  }
+  function shiftMonth(dir){
+    viewMonth.setMonth(viewMonth.getMonth()+dir);
+    renderMonthGrid();
+  }
+  function renderMonthGrid(){
+    monthLabel.textContent = viewMonth.toLocaleDateString('de-DE',{month:'long', year:'numeric'});
+    const firstOfMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
+    const gridStart = getMonday(firstOfMonth);
+    monthGrid.innerHTML = ['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>`<div class="mg-head">${d}</div>`).join('');
+    for(let i=0;i<42;i++){
+      const d = new Date(gridStart); d.setDate(d.getDate()+i);
+      const dStr = toDateStr(d);
+      const dayPersons = [...new Set(allEvents.filter(e=>e.date===dStr).flatMap(e=>e.who))];
+      const el = document.createElement('div');
+      el.className = 'month-day' + (d.getMonth()!==viewMonth.getMonth() ? ' other-month':'') + (dStr===TODAY_STR ? ' today':'') + (dStr===selectedDate ? ' selected':'');
+      el.innerHTML = `<div class="mdnum">${d.getDate()}</div><div class="dots">${dayPersons.map(p=>`<span class="dot" style="background:${people[p].color}"></span>`).join('')}</div>`;
+      el.onclick = ()=>{ selectDate(dStr); if(d.getMonth()!==viewMonth.getMonth()){ viewMonth = new Date(d.getFullYear(), d.getMonth(), 1); renderMonthGrid(); } };
+      monthGrid.appendChild(el);
+      if(i>=34 && d.getDay()===1 && d.getMonth()!==viewMonth.getMonth()) break; // nicht mehr als nötige Zeilen
+    }
+  }
 
   let selectedPerson = null;
   const agendaList = document.getElementById('agendaList');
@@ -473,9 +662,12 @@
 
   function renderAgenda(){
     agendaList.innerHTML = '';
-    const items = selectedPerson===null ? agenda : agenda.filter(a=>a.who.includes(selectedPerson));
+    const dayItems = allEvents.filter(e=>e.date===selectedDate);
+    const items = selectedPerson===null ? dayItems : dayItems.filter(a=>a.who.includes(selectedPerson));
+    const dLabel = selectedDate===TODAY_STR ? 'heute' : parseDateStr(selectedDate).toLocaleDateString('de-DE',{weekday:'long', day:'numeric', month:'long'});
+    heuteTitle.childNodes[0].textContent = selectedDate===TODAY_STR ? 'Heute ' : `${parseDateStr(selectedDate).toLocaleDateString('de-DE',{weekday:'short', day:'numeric', month:'numeric'})} `;
     if(items.length===0){
-      agendaList.innerHTML = '<div class="empty-note">Keine Termine heute.</div>';
+      agendaList.innerHTML = `<div class="empty-note">Keine Termine ${dLabel}.</div>`;
     }
     items.forEach(a=>{
       const el = document.createElement('div');
@@ -517,18 +709,23 @@
   const familyGrid = document.getElementById('familyGrid');
   function renderFamilyGrid(){
     familyGrid.innerHTML = '';
+    const dayItems = allEvents.filter(e=>e.date===selectedDate && e.personal);
     people.forEach((p, idx)=>{
-      const myEvents = agenda.filter(a => a.who.includes(idx));
+      const myEvents = dayItems.filter(a => a.who.includes(idx));
       const card = document.createElement('div');
       card.className = 'person-card';
       card.onclick = ()=> setPersonFilter(idx);
       card.innerHTML = `
         <div class="person-head">
           <div class="avatar" style="background:${p.color}">${p.initial}</div>
-          <div><b>${p.name}</b><span>${myEvents.length} Termin${myEvents.length===1?'':'e'} heute</span></div>
+          <div><b>${p.name}</b><span>${myEvents.length} eigene(r) Termin${myEvents.length===1?'':'e'}</span></div>
         </div>
-        <div class="person-events">${myEvents.map(e=>`<div class="pe-item"><b>${e.time}</b><span>${e.title}</span></div>`).join('') || '<div class="pe-item" style="opacity:.6;">Keine Termine heute</div>'}</div>
+        <div class="person-events">${myEvents.map(e=>`<div class="pe-item"><b>${e.time}</b><span>${e.title}</span></div>`).join('') || '<div class="pe-item" style="opacity:.6;">Keine eigenen Termine</div>'}</div>
         <ul class="person-todo" id="todo-${p.name}"></ul>
+        <div class="add-row mini-add-row">
+          <input type="text" id="todoInput-${p.name}" placeholder="Aufgabe für ${p.name}…" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation(); addPersonTodo('${p.name}')">+</button>
+        </div>
       `;
       familyGrid.appendChild(card);
       const ul = card.querySelector(`#todo-${p.name}`);
@@ -541,10 +738,23 @@
       });
     });
   }
+  function addPersonTodo(name){
+    const input = document.getElementById(`todoInput-${name}`);
+    const val = input.value.trim();
+    if(!val) return;
+    const ul = document.getElementById(`todo-${name}`);
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="mini-checkbox"></span><span class="txt">${val}</span><span class="del-x" onclick="event.stopPropagation(); this.parentElement.remove();">×</span>`;
+    li.querySelector('.mini-checkbox').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
+    li.querySelector('.txt').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
+    ul.appendChild(li);
+    input.value = '';
+  }
   renderFamilyGrid();
   renderAgenda();
 
   /* ---------- Essensplaner ---------- */
+  const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
   const mealThemes = {
     'Hausmannskost-Woche': [
       {n:'Wiener Schnitzel mit Kartoffelsalat', ing:['Schweineschnitzel','Erdäpfel','Ei','Mehl','Semmelbrösel','Zwiebel']},
@@ -882,14 +1092,23 @@
     });
   }catch(e){ document.getElementById('guestWifiQr').textContent = 'QR-Code konnte nicht geladen werden.'; }
 
-  /* ---------- Route planen ---------- */
-  function openRoute(){
-    const from = document.getElementById('routeFrom').value.trim() || 'Zuhause';
+  /* ---------- Route planen: Vorschau nach Enter, externer Button darunter ---------- */
+  function previewRoute(){
+    const from = document.getElementById('routeFrom').value.trim() || 'Marchtrenk';
     const to = document.getElementById('routeTo').value.trim();
     if(!to) return;
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}&travelmode=driving`;
-    window.open(url, '_blank');
+    document.getElementById('routeFrame').src = `https://www.google.com/maps?saddr=${encodeURIComponent(from)}&daddr=${encodeURIComponent(to)}&output=embed`;
+    document.getElementById('routePreviewWrap').style.display = 'block';
+    document.getElementById('routeHint').textContent = `Route von ${from} nach ${to}.`;
   }
+  function openRouteExternal(){
+    const from = document.getElementById('routeFrom').value.trim() || 'Marchtrenk';
+    const to = document.getElementById('routeTo').value.trim();
+    if(!to) return;
+    window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}&travelmode=driving`, '_blank');
+  }
+  document.getElementById('routeTo').addEventListener('keyup', (e)=>{ if(e.key==='Enter') previewRoute(); });
+  document.getElementById('routeFrom').addEventListener('keyup', (e)=>{ if(e.key==='Enter') previewRoute(); });
 
   /* ---------- Regenradar: läuft komplett über das Windy-iframe oben, kein eigener JS-Code nötig ---------- */
 
@@ -934,25 +1153,64 @@
         forecastRow.innerHTML += `<div class="fc-day"><div class="d">${dow}</div><div class="ic">${ic}</div><div class="t">${Math.round(d.daily.temperature_2m_max[i])}°</div></div>`;
       });
 
-      /* stündlicher Regen-Ausblick, nächste 10 Stunden ab jetzt */
-      const nowISO = new Date();
-      let startIdx = d.hourly.time.findIndex(t => new Date(t) >= nowISO);
-      if(startIdx < 0) startIdx = 0;
-      const hourlyRow = document.getElementById('hourlyRow');
-      hourlyRow.innerHTML = '';
-      for(let i=startIdx; i<startIdx+10 && i<d.hourly.time.length; i++){
-        const hh = new Date(d.hourly.time[i]).toLocaleTimeString('de-DE', {hour:'2-digit'});
-        const ic = wcodeMap(d.hourly.weathercode[i]).i;
-        const pop = d.hourly.precipitation_probability[i];
-        hourlyRow.innerHTML += `<div class="hr-col"><div class="h">${hh}</div><div class="ic">${ic}</div><div class="p">${pop}%</div></div>`;
+      try{
+        const nowISO = new Date();
+        let startIdx = d.hourly.time.findIndex(t => new Date(t) >= nowISO);
+        if(startIdx < 0) startIdx = 0;
+        const hourlyRow = document.getElementById('hourlyRow');
+        hourlyRow.innerHTML = '';
+        let firstRainHour = null;
+        for(let i=startIdx; i<d.hourly.time.length && toDateStr(new Date(d.hourly.time[i]))===TODAY_STR; i++){
+          const hh = new Date(d.hourly.time[i]).toLocaleTimeString('de-DE', {hour:'2-digit'});
+          const ic = wcodeMap(d.hourly.weathercode[i]).i;
+          const pop = d.hourly.precipitation_probability[i];
+          hourlyRow.innerHTML += `<div class="hr-col"><div class="h">${hh}</div><div class="ic">${ic}</div><div class="p">${pop}%</div></div>`;
+          if(pop >= 50 && firstRainHour === null){ firstRainHour = {hh, pop}; }
+        }
+        if(hourlyRow.children.length === 0){
+          hourlyRow.innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Für heute keine Stundendaten mehr verfügbar.</span>';
+        }
+        if(firstRainHour){ showRainWarning(firstRainHour.hh, firstRainHour.pop); }
+      }catch(err){
+        document.getElementById('hourlyRow').innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Regen-Ausblick konnte nicht geladen werden.</span>';
       }
     })
     .catch(()=>{
       document.getElementById('uvBadge').textContent = 'UV-Index aktuell nicht abrufbar';
-      document.getElementById('hourlyRow').innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Regen-Ausblick aktuell nicht abrufbar.</span>';
     });
 
+  function showRainWarning(hh, pop){
+    document.getElementById('rainWarnText').textContent = `Für ${hh} Uhr sind heute ${pop}% Regenwahrscheinlichkeit in Marchtrenk vorhergesagt.`;
+    document.getElementById('rainWarnOverlay').style.display = 'flex';
+  }
+  function closeRainWarn(){
+    document.getElementById('rainWarnOverlay').style.display = 'none';
+  }
+
+
   /* ---------- Google-Anmeldung & echter Kalender ---------- */
+  const TRASH_BIN_STYLE = {
+    'Bioabfall': {cls:'green', label:'Biotonne'},
+    'Altpapier': {cls:'blue', label:'Altpapier'},
+    'Gelber Sack': {cls:'yellow', label:'Gelber Sack'},
+    'Restabfall': {cls:'grey', label:'Restmülltonne'},
+  };
+  function updateTrashCard(){
+    const upcoming = trashEvents.filter(t=>t.date >= TODAY_STR).sort((a,b)=>a.date.localeCompare(b.date))[0];
+    if(!upcoming) return;
+    const style = TRASH_BIN_STYLE[upcoming.type] || {cls:'grey', label:upcoming.type};
+    const bin = document.getElementById('trashBinIcon');
+    bin.className = 'bin ' + style.cls;
+    document.getElementById('trashLabel').textContent = style.label;
+    let when;
+    if(upcoming.date === TODAY_STR) when = 'heute';
+    else{
+      const tmr = new Date(TODAY); tmr.setDate(tmr.getDate()+1);
+      when = (upcoming.date === toDateStr(tmr)) ? 'morgen' : parseDateStr(upcoming.date).toLocaleDateString('de-DE',{weekday:'long', day:'numeric', month:'numeric'});
+    }
+    document.getElementById('trashSub').textContent = `${when} · bitte rechtzeitig rausstellen`;
+  }
+
   const GOOGLE_CLIENT_ID = '834201109275-au15o6plrp4iv4a007bcupm7pmhqvia4.apps.googleusercontent.com';
   const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
@@ -1011,11 +1269,14 @@
         return;
       }
 
-      const now = new Date();
-      const dayStart = new Date(now); dayStart.setHours(0,0,0,0);
-      const dayEnd = new Date(now); dayEnd.setHours(23,59,59,999);
+      const dayStart = new Date(WEEK_START); dayStart.setDate(dayStart.getDate()-7);
+      const dayEnd = new Date(WEEK_START); dayEnd.setDate(dayEnd.getDate()+35);
 
-      let newAgenda = [];
+      const TRASH_TYPES = ['Bioabfall','Altpapier','Gelber Sack','Restabfall'];
+      function matchTrash(title){ return TRASH_TYPES.find(t => title.includes(t)); }
+
+      let newEvents = [];
+      let newTrash = [];
       for(const cal of mapped){
         const personIdx = CALENDAR_PERSON_MAP[cal.summary];
         const evRes = await fetch(
@@ -1024,21 +1285,32 @@
         );
         const evData = await evRes.json();
         (evData.items || []).forEach(ev=>{
+          const startDate = ev.start.dateTime ? new Date(ev.start.dateTime) : new Date(ev.start.date + 'T00:00:00');
+          const dateStr = toDateStr(startDate);
+          const title = ev.summary || '(ohne Titel)';
+          const trashType = matchTrash(title);
+          if(trashType){
+            newTrash.push({ date: dateStr, type: trashType });
+            return;
+          }
           const timeStr = ev.start.dateTime
-            ? new Date(ev.start.dateTime).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})
+            ? startDate.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})
             : 'Ganztägig';
           const who = personIdx === 'family' ? [0,1,2,3] : [personIdx];
-          newAgenda.push({ time:timeStr, title: ev.summary || '(ohne Titel)', who, color: people[who[0]].color });
+          newEvents.push({ date: dateStr, time:timeStr, title, who, color: people[who[0]].color, personal: personIdx !== 'family' });
         });
       }
-      newAgenda.sort((a,b)=> a.time.localeCompare(b.time));
+      newEvents.sort((a,b)=> a.date===b.date ? a.time.localeCompare(b.time) : a.date.localeCompare(b.date));
 
-      agenda.length = 0;
-      agenda.push(...newAgenda);
+      allEvents = newEvents;
+      trashEvents = newTrash;
+      renderWeekStrip();
       renderAgenda();
       renderFamilyGrid();
-      document.getElementById('googleStatus').textContent = `Verbunden – ${newAgenda.length} Termin(e) heute aus eurem echten Kalender.`;
-      document.querySelector('.draft-badge').textContent = 'Kalender live · übrige Bereiche teils noch Beispieldaten';
+      updateTrashCard();
+      const todayCount = allEvents.filter(e=>e.date===TODAY_STR).length;
+      document.getElementById('googleStatus').textContent = `Verbunden – ${todayCount} Termin(e) heute, mehrere Wochen geladen.`;
+      document.querySelector('.draft-badge').textContent = 'Kalender live · Essensplaner/Wetter teils Beispiel bzw. live';
     }catch(e){
       document.getElementById('googleStatus').textContent = 'Kalender konnten nicht geladen werden.';
     }
