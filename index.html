@@ -3,158 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Familienboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --board: #E7E4D6;
-    --board-2: #DEDACB;
-    --card: #F6F4EA;
-    --ink: #232821;
-    --ink-soft: #56604F;
-    --line: rgba(35,40,33,0.12);
-    --amber: #D98E2B;
-    --amber-soft: #F1D9AE;
-    --sage: #5C7A5E;
-    --sage-soft: #D9E3D6;
-    --berry: #A8415B;
-    --berry-soft: #F0D6DD;
-    --sky: #4C7A93;
-    --sky-soft: #D9E6EC;
-    --radius: 18px;
-    --shadow: 0 1px 2px rgba(35,40,33,0.06), 0 8px 20px -10px rgba(35,40,33,0.18);
+    --board: #E7E4D6; --board-2: #DEDACB; --card: #F6F4EA; --ink: #232821; --ink-soft: #56604F;
+    --line: rgba(35,40,33,0.12); --amber: #D98E2B; --amber-soft: #F1D9AE; --sage: #5C7A5E; --sage-soft: #D9E3D6;
+    --berry: #A8415B; --berry-soft: #F0D6DD; --sky: #4C7A93; --sky-soft: #D9E6EC;
+    --radius: 18px; --shadow: 0 1px 2px rgba(35,40,33,0.06), 0 8px 20px -10px rgba(35,40,33,0.18);
   }
   * { box-sizing: border-box; }
   html,body{ margin:0; padding:0; }
-  body{
-    background: radial-gradient(1200px 500px at 15% -10%, var(--board-2), transparent), var(--board);
-    color: var(--ink);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    padding: clamp(16px, 3vw, 40px);
-  }
+  body{ background: radial-gradient(1200px 500px at 15% -10%, var(--board-2), transparent), var(--board); color: var(--ink); font-family: 'Inter', sans-serif; min-height: 100vh; padding: clamp(16px, 3vw, 40px); }
   .wrap{ max-width: 1280px; margin: 0 auto; }
 
-  .draft-badge{
-    display:inline-flex; align-items:center; gap:8px;
-    background: var(--ink); color: var(--card);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px; letter-spacing: 0.04em;
-    padding: 6px 12px; border-radius: 999px;
-    margin-bottom: 18px;
-  }
-  .draft-badge::before{ content:''; width:6px; height:6px; border-radius:50%; background: var(--amber); }
+  .topbar{ display:flex; justify-content:flex-end; margin-bottom: 18px; }
+  .tab-bar{ display:flex; gap:6px; background: var(--card); border-radius:999px; padding:5px; box-shadow: var(--shadow); }
+  .tab-bar button{ border:none; background:none; color: var(--ink-soft); font-family:'Inter',sans-serif; font-weight:600; font-size:13px; padding:8px 16px; border-radius:999px; cursor:pointer; }
+  .tab-bar button.active{ background: var(--ink); color: var(--card); }
 
-  .hero{
-    display:flex; justify-content: space-between; align-items: flex-end;
-    gap: 24px; flex-wrap: wrap;
-    padding-bottom: 22px; margin-bottom: 26px;
-    border-bottom: 1.5px solid var(--line);
-  }
-  .hero-date .eyebrow{
-    font-family:'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-soft);
-    text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 4px;
-  }
-  .hero-date h1{
-    font-family: 'Fraunces', serif; font-weight: 600; font-optical-sizing: auto;
-    font-size: clamp(34px, 5.2vw, 58px); line-height: 0.98; margin: 0;
-    letter-spacing: -0.01em;
-  }
-  .hero-date .sub{ color: var(--ink-soft); font-size: 15px; margin-top: 8px; }
+  .hero-split{ display:grid; grid-template-columns: 1fr 1.3fr; gap:20px; margin-bottom:22px; align-items:stretch; }
+  .hero-left{ display:flex; flex-direction:column; justify-content:center; }
+  .hero-left .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 4px; }
+  .hero-left h1{ font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(30px, 4.6vw, 50px); line-height: 0.98; margin: 0; letter-spacing: -0.01em; }
+  .hero-left .sub{ color: var(--ink-soft); font-size: 14.5px; margin-top: 10px; line-height:1.5; }
+  .weather-card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; }
+  .weather-card h2{ font-family:'Fraunces', serif; font-size: 17px; font-weight:600; margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; }
+  .weather-card h2 .tag{ font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:10.5px; color: var(--ink-soft); }
+  .weather-now{ display:flex; align-items:baseline; gap:10px; }
+  .weather-now .icon{ font-size:28px; }
+  .weather-now .temp{ font-family:'Fraunces', serif; font-size:28px; font-weight:600; }
+  .weather-now .cond{ font-size:12.5px; color: var(--ink-soft); }
+  .uv-badge{ display:inline-flex; align-items:center; gap:6px; background: var(--amber-soft); color:#7A4E12; font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; margin-top:8px; }
+  .forecast-row{ display:flex; justify-content:space-between; gap:4px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); overflow-x:auto; }
+  .fc-day{ text-align:center; font-size:11px; color: var(--ink-soft); flex-shrink:0; min-width:30px; }
+  .fc-day .d{ font-family:'IBM Plex Mono', monospace; text-transform:uppercase; font-size:10px;}
+  .fc-day .ic{ font-size:15px; margin-top:2px; }
+  .fc-day .t{ font-size: 12.5px; color: var(--ink); font-weight:600; margin-top:2px; }
 
-  .weather-chip{
-    display:flex; align-items:center; gap: 16px;
-    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 14px 22px;
-  }
-  .weather-chip .icon{ font-size: 34px; line-height:1; }
-  .weather-chip .temp{ font-family:'Fraunces', serif; font-size: 30px; font-weight: 600; }
-  .weather-chip .meta{ font-size: 12.5px; color: var(--ink-soft); line-height:1.4; }
-  .weather-chip .meta b{ color: var(--ink); font-weight:600;}
+  .section-wrap{ margin-bottom: 22px; }
+  .section-move{ display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; }
+  .section-move button{ border:1px solid var(--line); background: var(--card); color: var(--ink-soft); width:26px; height:26px; border-radius:8px; cursor:pointer; font-size:12px; }
+  .section-move button:hover{ background: var(--ink); color: var(--card); }
 
-  .week-strip{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 28px; }
-  .day-note{
-    background: var(--card); border-radius: 14px; box-shadow: var(--shadow);
-    padding: 12px 10px 14px; min-height: 108px;
-    display:flex; flex-direction:column; gap:8px;
-    transition: transform .15s ease;
-  }
-  .day-note .dow{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
-  .day-note .dom{ font-family:'Fraunces', serif; font-size:22px; font-weight:600; margin-top:-2px;}
-  .day-note .dots{ display:flex; flex-wrap:wrap; gap:4px; margin-top:auto; }
-  .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-  .day-note.today{
-    background: var(--ink); color: var(--card);
-    transform: rotate(-1.2deg) scale(1.04);
-    box-shadow: 0 4px 6px rgba(35,40,33,0.15), 0 14px 26px -12px rgba(35,40,33,0.4);
-  }
-  .day-note.today .dow{ color: var(--amber-soft); }
-  .day-note.today .dom{ color: var(--card); }
-  .day-note.selected:not(.today){ border: 2px solid var(--sky); }
+  .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; overflow:hidden; }
+  .card h2{ font-family:'Fraunces', serif; font-size: 19px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .card h2 .tag{ font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:11px; color: var(--ink-soft); }
 
   .week-nav{ display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
   .week-nav button, .month-nav button{ border:1px solid var(--line); background: var(--card); color: var(--ink); font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; border-radius:999px; padding:6px 14px; cursor:pointer; }
   .week-nav button:hover, .month-nav button:hover{ background: var(--ink); color: var(--card); }
   .month-toggle{ margin-left:auto; }
   #weekLabel{ font-size:12.5px; color: var(--ink-soft); font-family:'IBM Plex Mono', monospace; }
+  .week-strip{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+  .day-note{ background: var(--board); border-radius: 14px; padding: 12px 10px 14px; min-height: 96px; display:flex; flex-direction:column; gap:8px; cursor:pointer; }
+  .day-note .dow{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .day-note .dom{ font-family:'Fraunces', serif; font-size:22px; font-weight:600; margin-top:-2px;}
+  .day-note .dots{ display:flex; flex-wrap:wrap; gap:4px; margin-top:auto; }
+  .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .day-note.today{ background: var(--ink); color: var(--card); }
+  .day-note.today .dow{ color: var(--amber-soft); }
+  .day-note.today .dom{ color: var(--card); }
+  .day-note.selected:not(.today){ border: 2px solid var(--sky); }
   .month-nav{ display:flex; align-items:center; justify-content:center; gap:16px; margin: 8px 0 12px; }
   #monthLabel{ font-family:'Fraunces', serif; font-size:16px; font-weight:600; min-width:160px; text-align:center; }
-  .month-grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; margin-bottom:24px; }
+  .month-grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; }
   .month-grid .mg-head{ text-align:center; font-family:'IBM Plex Mono', monospace; font-size:10px; color: var(--ink-soft); text-transform:uppercase; padding-bottom:4px; }
-  .month-day{ background: var(--card); border-radius:10px; min-height:52px; padding:6px; cursor:pointer; box-shadow: var(--shadow); display:flex; flex-direction:column; gap:3px; }
+  .month-day{ background: var(--board); border-radius:10px; min-height:52px; padding:6px; cursor:pointer; display:flex; flex-direction:column; gap:3px; }
   .month-day.other-month{ opacity:.35; }
   .month-day.today{ background: var(--ink); color: var(--card); }
   .month-day.selected:not(.today){ border:2px solid var(--sky); }
   .month-day .mdnum{ font-size:12px; font-weight:600; }
   .month-day .dots{ display:flex; flex-wrap:wrap; gap:3px; }
 
-  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin: 6px 0 14px; flex-wrap:wrap; gap:6px; }
-  .section-head h2{ font-family:'Fraunces', serif; font-size: 21px; font-weight:600; margin:0; }
-  .section-head .tag{ font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:11px; color: var(--ink-soft); }
-
-  .family-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 14px; }
-  .person-card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 18px 16px; cursor:pointer; border: 2px solid transparent; transition: border-color .15s ease, transform .15s ease; }
-  .person-card:hover{ transform: translateY(-2px); }
-  .person-card.active{ border-color: var(--ink); }
-  .person-head{ display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
-  .avatar{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces', serif; font-weight:600; font-size:16px; color:var(--card); flex-shrink:0; }
-  .person-head b{ font-size:15.5px; display:block; }
-  .person-head span{ font-size:11.5px; color: var(--ink-soft); }
-  .person-events{ font-size: 12.5px; margin-bottom: 10px; }
-  .person-events .pe-item{ display:flex; gap:6px; padding:4px 0; color: var(--ink-soft); }
-  .person-events .pe-item b{ color: var(--ink); font-weight:500; font-family:'IBM Plex Mono', monospace; font-size:11.5px; }
-  .person-todo{ list-style:none; margin:10px 0 0; padding-top:10px; border-top:1px solid var(--line); }
-  .person-todo li{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; cursor:pointer; user-select:none; }
-  .mini-checkbox{ width:16px; height:16px; border-radius:5px; border:1.5px solid var(--ink-soft); flex-shrink:0; position:relative; }
-  .mini-checkbox::after{ content:''; position:absolute; left:4px; top:2px; width:6px; height:3px; border-left:2px solid white; border-bottom:2px solid white; transform: rotate(-45deg); opacity:0; }
-  .person-todo li.done .mini-checkbox{ background: var(--sage); border-color: var(--sage); }
-  .person-todo li.done .mini-checkbox::after{ opacity:1; }
-  .person-todo li.done span.txt{ text-decoration:line-through; color: var(--ink-soft); }
-  .mini-add-row{ margin-top:8px; gap:6px; }
-  .mini-add-row input{ padding:6px 10px; font-size:12px; border-radius:8px; }
-  .mini-add-row button{ padding:0 10px; border-radius:8px; font-size:13px; }
-  .filter-note{ font-size:12px; color: var(--ink-soft); margin: 0 0 22px; }
-  .filter-note button{ border:none; background:none; color: var(--berry); font-weight:600; cursor:pointer; font-size:12px; padding:0; text-decoration:underline; }
-
-  .grid{ display:grid; grid-template-columns: 1.6fr 1fr; gap: 20px; align-items:start; margin-bottom: 28px; }
-  .grid > *{ min-width: 0; }
-  .grid.grid-balanced{ grid-template-columns: 1fr 1fr; }
-  .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; transition: box-shadow .2s ease; overflow:hidden; }
-  .card:hover{ box-shadow: 0 2px 4px rgba(35,40,33,0.08), 0 12px 26px -10px rgba(35,40,33,0.22); }
-  .card h2{ font-family:'Fraunces', serif; font-size: 19px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
-  .card h2 .tag{ font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:11px; color: var(--ink-soft); }
-
-  .view-toggle{ display:flex; gap:6px; }
-  .view-toggle button{
-    border:1px solid var(--line); background: var(--board); color: var(--ink-soft);
-    font-family:'Inter',sans-serif; font-size:11.5px; font-weight:600; border-radius:999px; padding:5px 12px; cursor:pointer;
-  }
-  .view-toggle button.active{ background: var(--ink); color: var(--card); border-color: var(--ink); }
-  .month-stub{ font-size:13px; color: var(--ink-soft); background: var(--board); border-radius:12px; padding:16px; display:none; }
-  .month-stub.show{ display:block; }
+  .legend-filter{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .legend-filter button{ display:inline-flex; align-items:center; gap:6px; border:1.5px solid var(--line); background: var(--board); color: var(--ink); font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; border-radius:999px; padding:6px 14px; cursor:pointer; }
+  .legend-filter button.active{ border-color: var(--ink); background: var(--ink); color: var(--card); }
+  .legend-filter .dot{ width:9px; height:9px; }
 
   .agenda-item{ display:flex; gap: 12px; align-items:flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
   .agenda-item:first-of-type{ border-top:none; }
@@ -166,51 +94,95 @@
   .who .dot{ width:7px; height:7px; }
   .empty-note{ font-size:13px; color: var(--ink-soft); padding: 6px 0; }
 
-  .legend{ display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
-  .legend span{ display:inline-flex; align-items:center; gap:6px; font-size:12px; color: var(--ink-soft); }
-
-  .side-stack{ display:flex; flex-direction:column; gap: 20px; }
   .trash-card{ background: linear-gradient(160deg, var(--sage-soft), var(--card) 60%); }
+  .trash-list{ display:flex; flex-direction:column; gap:12px; }
   .trash-row{ display:flex; align-items:center; gap:14px; }
-  .bin{ width:46px; height:54px; border-radius: 6px 6px 3px 3px; flex-shrink:0; position:relative; }
+  .bin{ width:40px; height:48px; border-radius: 6px 6px 3px 3px; flex-shrink:0; position:relative; }
   .bin::before{ content:''; position:absolute; top:-6px; left:4px; right:4px; height:8px; border-radius:3px; background:inherit; filter:brightness(0.85);}
-  .bin.yellow{ background: var(--amber); }
-  .bin.green{ background: var(--sage); }
-  .bin.blue{ background: var(--sky); }
-  .bin.grey{ background: #6b6f66; }
+  .bin.yellow{ background: var(--amber); } .bin.green{ background: var(--sage); } .bin.blue{ background: var(--sky); } .bin.grey{ background: #6b6f66; }
   .trash-row b{ font-size: 15px; }
   .trash-row span{ font-size: 12.5px; color: var(--ink-soft); display:block; margin-top:2px;}
 
-  .uv-badge{ display:inline-flex; align-items:center; gap:6px; background: var(--amber-soft); color:#7A4E12; font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:999px; margin-top:8px; }
-  .forecast-row{ display:flex; justify-content:space-between; gap:4px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); overflow-x:auto; }
-  .fc-day{ text-align:center; font-size:11px; color: var(--ink-soft); flex-shrink:0; min-width:30px; }
-  .fc-day .d{ font-family:'IBM Plex Mono', monospace; text-transform:uppercase; font-size:10px;}
-  .fc-day .ic{ font-size:15px; margin-top:2px; }
-  .fc-day .t{ font-size: 12.5px; color: var(--ink); font-weight:600; margin-top:2px; }
   .hourly-row{ display:flex; gap:8px; overflow-x:auto; margin-top:12px; padding-top:14px; border-top:1px solid var(--line); }
-  .hr-col{ text-align:center; font-size:11.5px; color: var(--ink-soft); flex-shrink:0; min-width:52px; background: var(--board); border-radius:10px; padding:8px 6px; transition: background .3s ease, transform .3s ease; }
-  .hr-col.active{ background: var(--sky); color: var(--card); transform: scale(1.08); }
-  .hr-col.active .p{ color: var(--card); }
+  .hr-col{ text-align:center; font-size:11.5px; color: var(--ink-soft); flex-shrink:0; min-width:52px; background: var(--board); border-radius:10px; padding:8px 6px; }
   .hr-col .h{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; }
   .hr-col .ic{ font-size:16px; margin:4px 0; }
   .hr-col .p{ font-size:12px; font-weight:600; color: var(--sky); }
 
-  .todo-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .radar-cta{ display:flex; align-items:center; gap:16px; background: var(--board); border-radius:14px; padding:18px 20px; text-decoration:none; color: var(--ink); }
+  .radar-cta:hover{ background: var(--sky-soft); }
+  .radar-cta-icon{ font-size:32px; flex-shrink:0; }
+  .radar-cta-text{ flex:1; display:flex; flex-direction:column; gap:4px; }
+  .radar-cta-text b{ font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
+  .radar-cta-text span{ font-size:12.5px; color: var(--ink-soft); line-height:1.4; }
+  .radar-cta-arrow{ font-size:20px; color: var(--sky); flex-shrink:0; }
+
+  .wifi-card{ text-align:center; }
+  #guestWifiQr{ display:flex; justify-content:center; margin: 8px 0 10px; }
+  .wifi-meta{ font-size:12px; color: var(--ink-soft); line-height:1.5; }
+  .test-tag{ display:inline-block; background: var(--berry-soft); color: var(--berry); font-size:10.5px; font-weight:700; letter-spacing:.04em; padding:2px 8px; border-radius:999px; margin-bottom:10px; }
+
+  .route-form label{ font-size:11.5px; color: var(--ink-soft); display:block; margin-bottom:4px; }
+  .route-form input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); margin-bottom:10px; }
+  .route-external-btn{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 10px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:10px; }
+  .route-external-btn:hover{ background: var(--ink); }
+  .route-note{ font-size:11.5px; color: var(--ink-soft); margin-top:10px; }
+  .route-frame{ width:100%; height:220px; border:none; border-radius:12px; margin-top:10px; }
+
+  .google-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin: 0 0 6px; }
+  .google-btn{ border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
+  .google-btn:hover{ background: var(--ink); }
+  .google-btn.connected{ background: var(--sage); }
+  .google-status{ font-size:12px; color: var(--ink-soft); }
+  .calendar-debug{ font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:10px 14px; margin: 8px 0 0; display:none; white-space:pre-wrap; }
+  .calendar-debug.show{ display:block; }
+
+  /* To-Dos */
+  .todo-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .todo-card h2{ font-size:17px; }
   .todo-list{ list-style:none; margin:0; padding:0; }
-  .todo-list li{ display:flex; align-items:center; gap:10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14.5px; cursor:pointer; user-select:none; }
+  .todo-list li{ display:flex; align-items:center; gap:10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
   .todo-list li:first-child{ border-top:none; }
-  .checkbox{ width:19px; height:19px; border-radius:6px; border: 1.5px solid var(--ink-soft); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition: all .12s ease; position:relative; }
+  .checkbox{ width:19px; height:19px; border-radius:6px; border: 1.5px solid var(--ink-soft); flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; }
   .checkbox::after{ content:''; position:absolute; left:5px; top:3px; width:9px; height:5px; border-left:2px solid white; border-bottom:2px solid white; transform: rotate(-45deg) translateY(-1px); opacity:0; }
   .todo-list li.done .checkbox{ background: var(--sage); border-color: var(--sage); }
   .todo-list li.done .checkbox::after{ opacity:1; }
-  .todo-list li.done span{ text-decoration: line-through; color: var(--ink-soft); }
-  .del-x{ margin-left:auto; color: var(--ink-soft); font-size:16px; cursor:pointer; padding:0 4px; flex-shrink:0; }
+  .todo-list li.done .todo-text{ text-decoration: line-through; color: var(--ink-soft); }
+  .todo-text{ flex:1; cursor:text; padding:2px 4px; border-radius:6px; }
+  .todo-text:hover{ background: var(--board); }
+  .todo-text-input{ flex:1; border:1px solid var(--sky); border-radius:6px; padding:2px 6px; font-family:'Inter',sans-serif; font-size:14px; }
+  .del-x{ color: var(--ink-soft); font-size:16px; cursor:pointer; padding:0 2px; flex-shrink:0; }
   .del-x:hover{ color: var(--berry); }
   .add-row{ display:flex; gap:8px; margin-top:12px; }
   .add-row input{ flex:1; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
   .add-row input:focus{ outline:2px solid var(--sage); outline-offset:1px; }
   .add-row button{ border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 0 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; }
   .add-row button:hover{ background: var(--sage); }
+  .done-toggle{ font-size:11.5px; color: var(--ink-soft); margin-top:14px; cursor:pointer; text-decoration:underline; }
+  .done-list{ display:none; margin-top:8px; }
+  .done-list.show{ display:block; }
+
+  /* Essensplaner */
+  .meal-controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom: 18px; }
+  .meal-controls select{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
+  .dice-btn{ border:none; background: var(--berry); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; }
+  .dice-btn:hover{ background: var(--ink); }
+  .meal-row{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 18px; }
+  .meal-day{ background: var(--board); border-radius: 12px; padding: 12px 10px; display:flex; flex-direction:column; gap:8px; }
+  .meal-day .dname{ font-family:'IBM Plex Mono', monospace; font-size: 11px; text-transform:uppercase; letter-spacing:.05em; color: var(--ink-soft); }
+  .dish-line{ display:flex; align-items:flex-start; justify-content:space-between; gap:6px; }
+  .meal-day .dish{ font-family:'Fraunces', serif; font-size: 13.5px; font-weight:600; line-height:1.25; min-height: 36px; }
+  .plus-btn{ border:none; background: var(--sage); color:var(--card); width:20px; height:20px; border-radius:6px; font-size:14px; line-height:1; cursor:pointer; flex-shrink:0; }
+  .plus-btn:hover{ background: var(--ink); }
+  .meal-day select{ border:1px solid var(--line); background: var(--card); border-radius:8px; padding: 6px 8px; font-family:'Inter',sans-serif; font-size: 11.5px; color: var(--ink); width:100%; }
+  .add-dish-form{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-top:1px solid var(--line); padding-top:16px; }
+  .add-dish-form input{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 8px 12px; font-family:'Inter',sans-serif; font-size: 13px; color: var(--ink); }
+  .add-dish-form input.name{ flex:1; min-width:160px; }
+  .add-dish-form input.ing{ flex:2; min-width:220px; }
+  .add-dish-form button{ border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
+  .add-dish-form button:hover{ background: var(--sage); }
+  .add-dish-hint{ width:100%; font-size:11.5px; color: var(--ink-soft); }
+
   .shop-flash{ display:inline-block; font-size:11px; color: var(--sage); font-weight:600; margin-left:6px; opacity:0; transition:opacity .2s ease; }
   .shop-flash.show{ opacity:1; }
   .store-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
@@ -229,62 +201,14 @@
   .store-chip.active{ background: var(--sc); border-color: var(--sc); color: var(--card); }
   .shop-start-btn{ width:100%; border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:14px; }
   .shop-start-btn:hover{ background: var(--berry); }
-  .shop-prompt{ display:none; white-space:pre-wrap; font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:12px; margin-top:10px; max-height:160px; overflow-y:auto; }
+  .shop-prompt{ display:none; white-space:pre-wrap; font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:12px; margin-top:10px; max-height:200px; overflow-y:auto; }
   .shop-prompt.show{ display:block; }
-
-  .meal-controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom: 18px; }
-  .meal-controls select{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
-  .dice-btn{ border:none; background: var(--berry); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
-  .dice-btn:hover{ background: var(--ink); }
-  .meal-row{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 18px; }
-  .meal-day{ background: var(--board); border-radius: 12px; padding: 12px 10px; display:flex; flex-direction:column; gap:8px; }
-  .meal-day .dname{ font-family:'IBM Plex Mono', monospace; font-size: 11px; text-transform:uppercase; letter-spacing:.05em; color: var(--ink-soft); }
-  .dish-line{ display:flex; align-items:flex-start; justify-content:space-between; gap:6px; }
-  .meal-day .dish{ font-family:'Fraunces', serif; font-size: 13.5px; font-weight:600; line-height:1.25; min-height: 36px; }
-  .plus-btn{ border:none; background: var(--sage); color:var(--card); width:20px; height:20px; border-radius:6px; font-size:14px; line-height:1; cursor:pointer; flex-shrink:0; }
-  .plus-btn:hover{ background: var(--ink); }
-  .meal-day select{ border:1px solid var(--line); background: var(--card); border-radius:8px; padding: 6px 8px; font-family:'Inter',sans-serif; font-size: 11.5px; color: var(--ink); width:100%; }
-  .add-dish-form{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-top:1px solid var(--line); padding-top:16px; }
-  .add-dish-form input{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 8px 12px; font-family:'Inter',sans-serif; font-size: 13px; color: var(--ink); }
-  .add-dish-form input.name{ flex:1; min-width:160px; }
-  .add-dish-form input.ing{ flex:2; min-width:220px; }
-  .add-dish-form button{ border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
-  .add-dish-form button:hover{ background: var(--sage); }
-  .add-dish-hint{ width:100%; font-size:11.5px; color: var(--ink-soft); }
-
-  .radar-cta{ display:flex; align-items:center; gap:16px; background: var(--board); border-radius:14px; padding:18px 20px; text-decoration:none; color: var(--ink); transition: background .15s ease, transform .15s ease; }
-  .radar-cta:hover{ background: var(--sky-soft); transform: translateY(-1px); }
-  .radar-cta-icon{ font-size:32px; flex-shrink:0; }
-  .radar-cta-text{ flex:1; display:flex; flex-direction:column; gap:4px; }
-  .radar-cta-text b{ font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
-  .radar-cta-text span{ font-size:12.5px; color: var(--ink-soft); line-height:1.4; }
-  .radar-cta-arrow{ font-size:20px; color: var(--sky); flex-shrink:0; }
-  .radar-note{ font-size:12px; color: var(--ink-soft); margin-top:10px; }
-  .radar-slider-row{ display:flex; align-items:center; gap:10px; margin-top:12px; }
-  .radar-play{ border:none; background: var(--sky); color: var(--card); width:30px; height:30px; border-radius:50%; font-size:12px; cursor:pointer; flex-shrink:0; }
-  .radar-play:hover{ background: var(--ink); }
-  .radar-slider-row input[type=range]{ flex:1; accent-color: var(--sky); }
-  .radar-time{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--ink-soft); width:80px; text-align:right; flex-shrink:0; }
-
-  .wifi-card{ text-align:center; }
-  #guestWifiQr{ display:flex; justify-content:center; margin: 8px 0 10px; }
-  .wifi-meta{ font-size:12px; color: var(--ink-soft); line-height:1.5; }
-  .test-tag{ display:inline-block; background: var(--berry-soft); color: var(--berry); font-size:10.5px; font-weight:700; letter-spacing:.04em; padding:2px 8px; border-radius:999px; margin-bottom:10px; }
-
-  .route-form label{ font-size:11.5px; color: var(--ink-soft); display:block; margin-bottom:4px; }
-  .route-form input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); margin-bottom:10px; }
-  .route-external-btn{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 10px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:10px; }
-  .route-external-btn:hover{ background: var(--ink); }
-  .route-note{ font-size:11.5px; color: var(--ink-soft); margin-top:10px; }
-  .route-note a{ color: var(--sky); font-weight:600; }
-  .route-frame{ width:100%; height:220px; border:none; border-radius:12px; margin-top:10px; }
 
   footer{ text-align:center; margin-top: 30px; font-size: 12px; color: var(--ink-soft); }
 
   @media (max-width: 860px){
-    .grid{ grid-template-columns: 1fr; }
-    .todo-row{ grid-template-columns: 1fr; }
-    .family-grid{ grid-template-columns: repeat(2, 1fr); }
+    .hero-split{ grid-template-columns: 1fr; }
+    .todo-grid{ grid-template-columns: repeat(2, 1fr); }
     .month-grid{ gap:4px; }
     .month-day{ min-height:40px; padding:4px; }
     .month-day .mdnum{ font-size:11px; }
@@ -292,24 +216,16 @@
   @media (max-width: 640px){
     body{ padding: 12px; }
     .card{ padding: 16px 16px; }
-    .hero{ gap:14px; }
-    .hero-date h1{ font-size: 30px; }
-    .weather-chip{ padding: 10px 16px; gap:10px; width:100%; justify-content:space-between; }
+    .hero-left h1{ font-size: 28px; }
     .google-bar{ flex-direction:column; align-items:flex-start; gap:6px; }
     .google-btn{ width:100%; }
-    .week-strip{
-      display:flex; overflow-x:auto; gap:8px; padding-bottom:4px; scroll-snap-type:x proximity;
-      grid-template-columns:none;
-    }
+    .week-strip{ display:flex; overflow-x:auto; gap:8px; padding-bottom:4px; scroll-snap-type:x proximity; grid-template-columns:none; }
     .day-note{ min-width:76px; scroll-snap-align:start; }
     .week-nav{ gap:6px; }
     .week-nav button, .month-nav button{ padding:6px 10px; font-size:11.5px; }
     .month-toggle{ margin-left:0; }
-    .family-grid{ grid-template-columns: 1fr; }
-    .meal-row{
-      display:flex; overflow-x:auto; gap:8px; scroll-snap-type:x proximity; padding-bottom:4px;
-      grid-template-columns:none;
-    }
+    .todo-grid{ grid-template-columns: 1fr; }
+    .meal-row{ display:flex; overflow-x:auto; gap:8px; scroll-snap-type:x proximity; padding-bottom:4px; grid-template-columns:none; }
     .meal-day{ min-width:150px; scroll-snap-align:start; }
     .add-dish-form input.name, .add-dish-form input.ing{ min-width: 100%; }
     .radar-cta{ flex-wrap:wrap; }
@@ -320,7 +236,7 @@
     .store-tabs button{ padding:6px 10px; font-size:11px; }
     .store-chip{ width:24px; height:24px; }
     .del-x{ font-size:20px; padding:0 8px; }
-    .checkbox, .mini-checkbox{ width:22px; height:22px; }
+    .checkbox{ width:22px; height:22px; }
   }
   @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
 
@@ -334,20 +250,13 @@
   .gate-error{ color: var(--berry); font-size:12px; margin: 10px 0 0; display:none; }
   .gate-error.show{ display:block; }
 
-  .rain-warn-overlay{ position:fixed; inset:0; background: rgba(35,40,33,0.55); display:none; align-items:center; justify-content:center; z-index:998; padding:20px; }
-  .rain-warn-box{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 26px; text-align:center; width:100%; max-width:320px; }
-  .rain-warn-icon{ font-size:38px; margin-bottom:10px; }
-  .rain-warn-box p{ font-size:14px; color: var(--ink); line-height:1.5; margin: 0 0 18px; }
-  .rain-warn-box button{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:14px; cursor:pointer; }
-  .rain-warn-box button:hover{ background: var(--ink); }
-
-  .google-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin: 14px 0 6px; }
-  .google-btn{ border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
-  .google-btn:hover{ background: var(--ink); }
-  .google-btn.connected{ background: var(--sage); }
-  .google-status{ font-size:12px; color: var(--ink-soft); }
-  .calendar-debug{ font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:10px 14px; margin: 8px 0 20px; display:none; white-space:pre-wrap; }
-  .calendar-debug.show{ display:block; }
+  .warn-overlay{ position:fixed; inset:0; background: rgba(35,40,33,0.55); display:none; align-items:center; justify-content:center; z-index:998; padding:20px; }
+  .warn-overlay.show{ display:flex; }
+  .warn-box{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 26px; text-align:center; width:100%; max-width:320px; }
+  .warn-icon{ font-size:38px; margin-bottom:10px; }
+  .warn-box p{ font-size:14px; color: var(--ink); line-height:1.5; margin: 0 0 18px; white-space:pre-line; }
+  .warn-box button{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:14px; cursor:pointer; }
+  .warn-box button:hover{ background: var(--ink); }
 </style>
 </head>
 <body>
@@ -360,130 +269,119 @@
     <p class="gate-error" id="gateError">Falscher Code, bitte nochmal versuchen.</p>
   </div>
 </div>
-<div class="rain-warn-overlay" id="rainWarnOverlay">
-  <div class="rain-warn-box">
-    <div class="rain-warn-icon">🌧️</div>
-    <p id="rainWarnText"></p>
-    <button onclick="closeRainWarn()">Verstanden</button>
+
+<div class="warn-overlay" id="warnOverlay">
+  <div class="warn-box">
+    <div class="warn-icon" id="warnIcon">🌧️</div>
+    <p id="warnText"></p>
+    <button onclick="closeWarn()">Verstanden</button>
   </div>
 </div>
+
 <div class="wrap" id="mainWrap" style="display:none;">
 
-  <span class="draft-badge">Entwurf · teils Live-Daten (Wetter/UV/Radar), Kalender &amp; Listen noch Beispieldaten</span>
-
-  <div class="hero">
-    <div class="hero-date">
-      <p class="eyebrow">Donnerstag · 27. August 2026</p>
-      <h1>Guten Morgen.</h1>
-      <p class="sub">3 Termine heute · 2 Aufgaben offen · Gelbe Tonne morgen früh</p>
-    </div>
-    <div class="weather-chip">
-      <div class="icon" id="heroIcon">☁️</div>
-      <div><div class="temp" id="heroTemp">25°</div></div>
-      <div class="meta" id="heroMeta">Meist bewölkt<br><b>30°</b> / 18° heute<br>Linz</div>
+  <div class="topbar">
+    <div class="tab-bar">
+      <button id="tabBtn-general" class="active" onclick="showTab('general')">Allgemeines</button>
+      <button id="tabBtn-todos" onclick="showTab('todos')">To Do's</button>
+      <button id="tabBtn-meals" onclick="showTab('meals')">Essensplaner</button>
     </div>
   </div>
 
-  <div class="google-bar">
-    <button id="googleBtn" class="google-btn" onclick="connectGoogle()">🔑 Mit Google anmelden</button>
-    <span id="googleStatus" class="google-status">Kalender zeigt noch Beispieldaten.</span>
-  </div>
-  <div id="calendarDebug" class="calendar-debug"></div>
+  <!-- ============ TAB: ALLGEMEINES ============ -->
+  <div id="panel-general">
 
-  <div class="week-nav">
-    <button onclick="shiftWeek(-1)">‹ Woche</button>
-    <span id="weekLabel"></span>
-    <button onclick="shiftWeek(1)">Woche ›</button>
-    <button class="month-toggle" onclick="toggleMonthView()" id="monthToggleBtn">📅 Monat</button>
-  </div>
-  <div class="week-strip" id="weekStrip"></div>
-  <div class="month-nav" id="monthNav" style="display:none;">
-    <button onclick="shiftMonth(-1)">‹</button>
-    <span id="monthLabel"></span>
-    <button onclick="shiftMonth(1)">›</button>
-  </div>
-  <div class="month-grid" id="monthGrid" style="display:none;"></div>
-
-  <div class="section-head"><h2>Familie</h2><span class="tag">antippen filtert den Kalender darunter</span></div>
-  <div class="family-grid" id="familyGrid"></div>
-  <p class="filter-note" id="filterNote">Alle Familienmitglieder werden im Kalender unten angezeigt.</p>
-
-  <div class="grid">
-    <div class="card">
-      <h2 id="heuteTitle">Heute <span class="tag">alle zusammen</span>
-        <span class="view-toggle">
-          <button id="btnViewHeute" class="active" onclick="setView('heute')">Heute</button>
-          <button id="btnViewMonat" onclick="setView('monat')">Monat</button>
-        </span>
-      </h2>
-      <div id="agendaList"></div>
-      <div class="month-stub" id="monthStub">Monatsansicht folgt, sobald eure echten Kalender (Google/iCloud) über Home Assistant verbunden sind – dann blättert ihr hier durch alle Monate statt nur den heutigen Tag zu sehen.</div>
-      <div class="legend" id="legend"></div>
+    <div class="section-wrap" id="sec-hero" data-sec="hero">
+      <div class="section-move"><button onclick="moveSection('hero',-1)">▲</button><button onclick="moveSection('hero',1)">▼</button></div>
+      <div class="hero-split">
+        <div class="hero-left">
+          <p class="eyebrow" id="heroEyebrow">–</p>
+          <h1 id="heroGreeting">Hallo.</h1>
+          <p class="sub" id="heroSub">Lädt…</p>
+        </div>
+        <div class="weather-card">
+          <h2>Wetter <span class="tag" id="weatherLoc">Marchtrenk</span></h2>
+          <div class="weather-now">
+            <span class="icon" id="heroIcon">…</span>
+            <span class="temp" id="heroTemp">–°</span>
+            <span class="cond" id="heroMeta">Lädt…</span>
+          </div>
+          <span class="uv-badge" id="uvBadge">UV-Index wird geladen…</span>
+          <div class="forecast-row" id="forecastRow"></div>
+        </div>
+      </div>
+      <div class="google-bar">
+        <button id="googleBtn" class="google-btn" onclick="connectGoogle()">🔑 Mit Google anmelden</button>
+        <span id="googleStatus" class="google-status">Noch nicht angemeldet.</span>
+      </div>
+      <div id="calendarDebug" class="calendar-debug"></div>
     </div>
 
-    <div class="side-stack">
+    <div class="section-wrap" id="sec-week" data-sec="week">
+      <div class="section-move"><button onclick="moveSection('week',-1)">▲</button><button onclick="moveSection('week',1)">▼</button></div>
+      <div class="card">
+        <div class="week-nav">
+          <button onclick="shiftWeek(-1)">‹ Woche</button>
+          <span id="weekLabel"></span>
+          <button onclick="shiftWeek(1)">Woche ›</button>
+          <button class="month-toggle" onclick="toggleMonthView()" id="monthToggleBtn">📅 Monat</button>
+        </div>
+        <div class="week-strip" id="weekStrip"></div>
+        <div class="month-nav" id="monthNav" style="display:none;">
+          <button onclick="shiftMonth(-1)">‹</button>
+          <span id="monthLabel"></span>
+          <button onclick="shiftMonth(1)">›</button>
+        </div>
+        <div class="month-grid" id="monthGrid" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div class="section-wrap" id="sec-heute" data-sec="heute">
+      <div class="section-move"><button onclick="moveSection('heute',-1)">▲</button><button onclick="moveSection('heute',1)">▼</button></div>
+      <div class="card">
+        <h2 id="heuteTitle">Heute</h2>
+        <div class="legend-filter" id="legendFilterRow"></div>
+        <div id="agendaList"></div>
+      </div>
+    </div>
+
+    <div class="section-wrap" id="sec-muell" data-sec="muell">
+      <div class="section-move"><button onclick="moveSection('muell',-1)">▲</button><button onclick="moveSection('muell',1)">▼</button></div>
       <div class="card trash-card">
         <h2>Müllkalender</h2>
-        <div class="trash-row">
-          <div class="bin yellow" id="trashBinIcon"></div>
-          <div><b id="trashLabel">Gelbe Tonne</b><span id="trashSub">Beispiel – wird nach Google-Anmeldung live</span></div>
-        </div>
+        <div class="trash-list" id="trashList"><span class="empty-note">Noch keine Müll-Termine geladen.</span></div>
       </div>
+    </div>
 
+    <div class="section-wrap" id="sec-radar" data-sec="radar">
+      <div class="section-move"><button onclick="moveSection('radar',-1)">▲</button><button onclick="moveSection('radar',1)">▼</button></div>
       <div class="card">
-        <h2>Wetter <span class="tag">live · Open-Meteo</span></h2>
-        <div style="display:flex; align-items:baseline; gap:10px;">
-          <span style="font-family:'Fraunces',serif; font-size:34px; font-weight:600;" id="sideTemp">25°</span>
-          <span style="color:var(--ink-soft); font-size:13px;" id="sideCond">Meist bewölkt, 10% Regen</span>
-        </div>
-        <span class="uv-badge" id="uvBadge">UV-Index wird geladen…</span>
-        <div class="forecast-row" id="forecastRow"></div>
+        <h2>Regenradar</h2>
+        <a href="https://www.wetteronline.at/regenradar/marchtrenk?mode=interactive&wrp=periodPrognose24h" target="_blank" class="radar-cta">
+          <span class="radar-cta-icon">🌧️</span>
+          <span class="radar-cta-text">
+            <b>Live-Regenradar für Marchtrenk ansehen</b>
+            <span>Öffnet wetteronline.at in einem neuen Tab – interaktiv, mit Zeitregler für die 24h-Prognose.</span>
+          </span>
+          <span class="radar-cta-arrow">→</span>
+        </a>
+        <h2 style="margin-top:22px;">Regen-Ausblick <span class="tag">stündlich · nächste 12h</span></h2>
+        <div class="hourly-row" id="hourlyRow"></div>
       </div>
     </div>
-  </div>
 
-  <div class="card" style="margin-bottom: 28px;">
-    <div class="section-head" style="margin:0 0 16px;">
-      <h2>Essensplaner</h2>
-      <span class="tag">Wochen-Menü wählen, tauschen oder auslosen</span>
-    </div>
-    <div class="meal-controls">
-      <select id="themeSelect"></select>
-      <button class="dice-btn" onclick="randomizeWeek()">🎲 Neue Woche auslosen</button>
-    </div>
-    <div class="meal-row" id="mealRow"></div>
-    <div class="add-dish-form">
-      <input class="name" id="newDishName" type="text" placeholder="Neues Gericht, z. B. Kürbisgnocchi">
-      <input class="ing" id="newDishIng" type="text" placeholder="Zutaten, mit Komma getrennt">
-      <button onclick="addDish()">Zum aktuellen Thema hinzufügen</button>
-      <span class="add-dish-hint">Wird sofort im Dropdown wählbar und beim nächsten Auslosen mitberücksichtigt.</span>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <h2>Regenradar</h2>
-      <a href="https://www.wetteronline.at/regenradar/marchtrenk?mode=interactive&wrp=periodPrognose24h" target="_blank" class="radar-cta">
-        <span class="radar-cta-icon">🌧️</span>
-        <span class="radar-cta-text">
-          <b>Live-Regenradar für Marchtrenk ansehen</b>
-          <span>Öffnet wetteronline.at in einem neuen Tab – interaktiv, mit Zeitregler für die 24h-Prognose. Funktioniert zuverlässig auf jedem Gerät.</span>
-        </span>
-        <span class="radar-cta-arrow">→</span>
-      </a>
-
-      <h2 style="margin-top:22px;">Regen-Ausblick <span class="tag">stündlich bis Tagesende</span></h2>
-      <div class="hourly-row" id="hourlyRow"></div>
-    </div>
-
-    <div class="side-stack">
+    <div class="section-wrap" id="sec-wifi" data-sec="wifi">
+      <div class="section-move"><button onclick="moveSection('wifi',-1)">▲</button><button onclick="moveSection('wifi',1)">▼</button></div>
       <div class="card wifi-card">
         <h2 style="justify-content:center;">Gäste-WLAN</h2>
         <span class="test-tag">NUR TEST</span>
         <div id="guestWifiQr"></div>
         <div class="wifi-meta">Netzwerk: <b>Familie-Gast</b><br>Passwort: <b>Test1234</b></div>
       </div>
+    </div>
 
+    <div class="section-wrap" id="sec-route" data-sec="route">
+      <div class="section-move"><button onclick="moveSection('route',-1)">▲</button><button onclick="moveSection('route',1)">▼</button></div>
       <div class="card">
         <h2>Route planen</h2>
         <div class="route-form">
@@ -499,35 +397,48 @@
         </div>
       </div>
     </div>
-  </div>
+
   </div>
 
-  <div class="card" style="margin-top:20px;">
-    <h2>Listen <span class="tag">gemeinsam bearbeitbar</span></h2>
-    <div class="todo-row">
-      <div>
-        <h2 style="font-size:15px; margin-bottom:6px;">Einkaufen <span class="shop-flash" id="shopFlash">✓ Zutaten hinzugefügt</span></h2>
-        <div class="store-tabs" id="storeTabs"></div>
-        <div id="shopListContainer"></div>
-        <div class="add-row">
-          <input type="text" id="shopInput" placeholder="Artikel hinzufügen…">
-          <button onclick="addItem()">+</button>
-        </div>
-        <button class="shop-start-btn" onclick="startShopping()">🛒 Einkauf starten</button>
-        <div class="shop-prompt" id="shopPrompt"></div>
+  <!-- ============ TAB: TO DO'S ============ -->
+  <div id="panel-todos" style="display:none;">
+    <div class="todo-grid" id="todoGrid"></div>
+  </div>
+
+  <!-- ============ TAB: ESSENSPLANER ============ -->
+  <div id="panel-meals" style="display:none;">
+    <div class="card" style="margin-bottom: 22px;">
+      <div class="section-head" style="margin:0 0 16px; display:flex; align-items:baseline; justify-content:space-between;">
+        <h2 style="margin:0;">Essensplaner</h2>
+        <span class="tag">Wochen-Menü wählen, tauschen oder auslosen</span>
       </div>
-      <div>
-        <h2 style="font-size:15px; margin-bottom:6px;">Gemeinsamer Haushalt</h2>
-        <ul class="todo-list" id="choreList"></ul>
-        <div class="add-row">
-          <input type="text" id="choreInput" placeholder="Aufgabe hinzufügen…">
-          <button onclick="addChore()">+</button>
-        </div>
+      <div class="meal-controls">
+        <select id="themeSelect"></select>
+        <button class="dice-btn" onclick="randomizeWeek()">🎲 Neue Woche auslosen</button>
       </div>
+      <div class="meal-row" id="mealRow"></div>
+      <div class="add-dish-form">
+        <input class="name" id="newDishName" type="text" placeholder="Neues Gericht, z. B. Kürbisgnocchi">
+        <input class="ing" id="newDishIng" type="text" placeholder="Zutaten, mit Komma getrennt">
+        <button onclick="addDish()">Zum aktuellen Thema hinzufügen</button>
+        <span class="add-dish-hint">Wird sofort im Dropdown wählbar und beim nächsten Auslosen mitberücksichtigt.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Einkaufsliste <span class="shop-flash" id="shopFlash">✓ Zutaten hinzugefügt</span></h2>
+      <div class="store-tabs" id="storeTabs"></div>
+      <div id="shopListContainer"></div>
+      <div class="add-row">
+        <input type="text" id="shopInput" placeholder="Artikel hinzufügen…">
+        <button onclick="addItem()">+</button>
+      </div>
+      <button class="shop-start-btn" onclick="startShopping()">🛒 Einkauf starten</button>
+      <div class="shop-prompt" id="shopPrompt"></div>
     </div>
   </div>
 
-  <footer>Familienboard · Entwurf v3 — Kalender, Listen und Müllkalender werden im nächsten Schritt an eure Home-Assistant-Instanz angebunden</footer>
+  <footer>Familienboard · Reihenfolge der Abschnitte in "Allgemeines" per ▲▼ anpassbar (aktuell pro Sitzung, dauerhafte Speicherung folgt)</footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -546,6 +457,42 @@
   }
   document.getElementById('gateInput').addEventListener('keyup', (e)=>{ if(e.key==='Enter') checkGate(); });
 
+  /* ---------- Tabs ---------- */
+  function showTab(name){
+    ['general','todos','meals'].forEach(t=>{
+      document.getElementById('panel-'+t).style.display = (t===name) ? '' : 'none';
+      document.getElementById('tabBtn-'+t).classList.toggle('active', t===name);
+    });
+  }
+
+  /* ---------- Warn-Popup-Queue (Regen + Müll teilen sich das gleiche Fenster) ---------- */
+  let warnQueue = [];
+  function queueWarning(icon, text){
+    warnQueue.push({icon, text});
+    if(warnQueue.length === 1) showNextWarning();
+  }
+  function showNextWarning(){
+    if(!warnQueue.length) return;
+    const w = warnQueue[0];
+    document.getElementById('warnIcon').textContent = w.icon;
+    document.getElementById('warnText').textContent = w.text;
+    document.getElementById('warnOverlay').classList.add('show');
+  }
+  function closeWarn(){
+    document.getElementById('warnOverlay').classList.remove('show');
+    warnQueue.shift();
+    setTimeout(showNextWarning, 300);
+  }
+
+  /* ---------- Abschnitte in "Allgemeines" verschieben (Sitzung, siehe Hinweis unten) ---------- */
+  function moveSection(id, dir){
+    const el = document.getElementById('sec-'+id);
+    const parent = el.parentElement;
+    if(dir === -1 && el.previousElementSibling){ parent.insertBefore(el, el.previousElementSibling); }
+    if(dir === 1 && el.nextElementSibling){ parent.insertBefore(el.nextElementSibling, el); }
+  }
+
+  /* ---------- Grunddaten ---------- */
   const people = [
     { name:'Mama', initial:'M', color:'var(--berry)' },
     { name:'Papa', initial:'P', color:'var(--sky)' },
@@ -557,38 +504,38 @@
     const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
     return `${y}-${m}-${day}`;
   }
-  function parseDateStr(s){
-    const [y,m,d] = s.split('-').map(Number);
-    return new Date(y, m-1, d);
-  }
-  function getMonday(d){
-    const x = new Date(d);
-    const day = x.getDay();
-    const diff = (day===0 ? -6 : 1-day);
-    x.setDate(x.getDate()+diff);
-    x.setHours(0,0,0,0);
-    return x;
-  }
+  function parseDateStr(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+  function getMonday(d){ const x=new Date(d); const day=x.getDay(); const diff=(day===0?-6:1-day); x.setDate(x.getDate()+diff); x.setHours(0,0,0,0); return x; }
+
   const TODAY = new Date();
   const TODAY_STR = toDateStr(TODAY);
+  const TOMORROW_STR = (()=>{ const t=new Date(TODAY); t.setDate(t.getDate()+1); return toDateStr(t); })();
   let WEEK_START = getMonday(TODAY);
   let viewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
-
-  function weekDatesFor(start){
-    return [0,1,2,3,4,5,6].map(i=>{ const d=new Date(start); d.setDate(d.getDate()+i); return d; });
-  }
+  function weekDatesFor(start){ return [0,1,2,3,4,5,6].map(i=>{ const d=new Date(start); d.setDate(d.getDate()+i); return d; }); }
   let weekDates = weekDatesFor(WEEK_START);
-
   let selectedDate = TODAY_STR;
 
-  // allEvents: alle geladenen Termine (Beispieldaten bis zur Google-Anmeldung), jeweils mit Datum + personal-Flag.
-  let allEvents = [
-    { date: TODAY_STR, time:'08:00', title:'Schulbeginn Matteo', who:[2], color:'var(--sage)', personal:true },
-    { date: TODAY_STR, time:'14:30', title:'Zahnarzttermin Laurin', who:[1,3], color:'var(--amber)', personal:false },
-    { date: TODAY_STR, time:'18:00', title:'Fußballtraining', who:[3], color:'var(--amber)', personal:true },
-  ];
-  let trashEvents = [];
+  let allEvents = [];   // wird nach Google-Anmeldung befüllt, keine Beispieldaten mehr
+  let trashEvents = []; // dito
 
+  /* ---------- Dynamische Begrüßung ---------- */
+  function updateHero(){
+    const h = TODAY.getHours();
+    const greet = h<6 ? 'Gute Nacht.' : h<11 ? 'Guten Morgen.' : h<17 ? 'Guten Tag.' : h<22 ? 'Guten Abend.' : 'Gute Nacht.';
+    document.getElementById('heroGreeting').textContent = greet;
+    document.getElementById('heroEyebrow').textContent = TODAY.toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+    const todayCount = allEvents.filter(e=>e.date===TODAY_STR).length;
+    let openTodos = 0;
+    Object.values(todoState).forEach(t=> openTodos += t.active.length);
+    let parts = [`${todayCount} Termin${todayCount===1?'':'e'} heute`, `${openTodos} Aufgabe${openTodos===1?'':'n'} offen`];
+    const tomorrowTrash = trashEvents.filter(t=>t.date===TOMORROW_STR).map(t=>t.type);
+    if(tomorrowTrash.length){ parts.push(`${tomorrowTrash.join(' + ')} morgen früh`); }
+    document.getElementById('heroSub').textContent = parts.join(' · ');
+  }
+
+  /* ---------- Wochenübersicht ---------- */
   const weekStrip = document.getElementById('weekStrip');
   const weekLabel = document.getElementById('weekLabel');
   function renderWeekStrip(){
@@ -606,16 +553,12 @@
       weekStrip.appendChild(el);
     });
   }
-  function shiftWeek(dir){
-    WEEK_START.setDate(WEEK_START.getDate() + dir*7);
-    renderWeekStrip();
-  }
+  function shiftWeek(dir){ WEEK_START.setDate(WEEK_START.getDate() + dir*7); renderWeekStrip(); }
   function selectDate(dStr){
     selectedDate = dStr;
     renderWeekStrip();
     if(document.getElementById('monthGrid').style.display !== 'none') renderMonthGrid();
     renderAgenda();
-    renderFamilyGrid();
   }
   renderWeekStrip();
 
@@ -633,10 +576,7 @@
     document.getElementById('monthToggleBtn').textContent = showing ? '📅 Monat' : '🗓️ Woche';
     if(!showing) renderMonthGrid();
   }
-  function shiftMonth(dir){
-    viewMonth.setMonth(viewMonth.getMonth()+dir);
-    renderMonthGrid();
-  }
+  function shiftMonth(dir){ viewMonth.setMonth(viewMonth.getMonth()+dir); renderMonthGrid(); }
   function renderMonthGrid(){
     monthLabel.textContent = viewMonth.toLocaleDateString('de-DE',{month:'long', year:'numeric'});
     const firstOfMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
@@ -651,107 +591,149 @@
       el.innerHTML = `<div class="mdnum">${d.getDate()}</div><div class="dots">${dayPersons.map(p=>`<span class="dot" style="background:${people[p].color}"></span>`).join('')}</div>`;
       el.onclick = ()=>{ selectDate(dStr); if(d.getMonth()!==viewMonth.getMonth()){ viewMonth = new Date(d.getFullYear(), d.getMonth(), 1); renderMonthGrid(); } };
       monthGrid.appendChild(el);
-      if(i>=34 && d.getDay()===1 && d.getMonth()!==viewMonth.getMonth()) break; // nicht mehr als nötige Zeilen
+      if(i>=34 && d.getDay()===1 && d.getMonth()!==viewMonth.getMonth()) break;
     }
   }
 
-  let selectedPerson = null;
+  /* ---------- Heute + Legenden-Filter (Familie / Mama / Papa) ---------- */
+  let legendFilter = null; // null = alle, 'family', 0 (Mama), 1 (Papa)
   const agendaList = document.getElementById('agendaList');
-  const filterNote = document.getElementById('filterNote');
   const heuteTitle = document.getElementById('heuteTitle');
-
+  const LEGEND_ITEMS = [
+    { key:'family', label:'Familie', color:'var(--ink-soft)' },
+    { key:0, label:'Mama', color:'var(--berry)' },
+    { key:1, label:'Papa', color:'var(--sky)' },
+  ];
+  function renderLegend(){
+    const row = document.getElementById('legendFilterRow');
+    row.innerHTML = LEGEND_ITEMS.map(l=>
+      `<button class="${legendFilter===l.key?'active':''}" onclick="setLegendFilter('${l.key}')"><span class="dot" style="background:${l.color}"></span>${l.label}</button>`
+    ).join('');
+  }
+  function setLegendFilter(key){
+    const k = (key==='family') ? 'family' : Number(key);
+    legendFilter = (legendFilter === k) ? null : k;
+    renderLegend();
+    renderAgenda();
+  }
+  function matchesFilter(e){
+    if(legendFilter === null) return true;
+    if(legendFilter === 'family') return e.personal === false;
+    return e.personal === true && e.who.includes(legendFilter);
+  }
   function renderAgenda(){
     agendaList.innerHTML = '';
-    const dayItems = allEvents.filter(e=>e.date===selectedDate);
-    const items = selectedPerson===null ? dayItems : dayItems.filter(a=>a.who.includes(selectedPerson));
+    const dayItems = allEvents.filter(e=>e.date===selectedDate).filter(matchesFilter);
     const dLabel = selectedDate===TODAY_STR ? 'heute' : parseDateStr(selectedDate).toLocaleDateString('de-DE',{weekday:'long', day:'numeric', month:'long'});
-    heuteTitle.childNodes[0].textContent = selectedDate===TODAY_STR ? 'Heute ' : `${parseDateStr(selectedDate).toLocaleDateString('de-DE',{weekday:'short', day:'numeric', month:'numeric'})} `;
-    if(items.length===0){
+    heuteTitle.textContent = selectedDate===TODAY_STR ? 'Heute' : parseDateStr(selectedDate).toLocaleDateString('de-DE',{weekday:'short', day:'numeric', month:'numeric'});
+    if(dayItems.length===0){
       agendaList.innerHTML = `<div class="empty-note">Keine Termine ${dLabel}.</div>`;
     }
-    items.forEach(a=>{
+    dayItems.forEach(a=>{
       const el = document.createElement('div');
       el.className = 'agenda-item';
       el.innerHTML = `<div class="agenda-time">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${a.title}</b><span class="who">${a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ')}</span></div>`;
       agendaList.appendChild(el);
     });
-    if(selectedPerson===null){
-      filterNote.innerHTML = 'Alle Familienmitglieder werden im Kalender unten angezeigt.';
-    }else{
-      filterNote.innerHTML = `Kalender gefiltert auf <b>${people[selectedPerson].name}</b>. <button onclick="setPersonFilter(null)">Alle wieder anzeigen</button>`;
-    }
   }
+  renderLegend();
+  renderAgenda();
+  updateHero();
 
-  function setPersonFilter(idx){
-    selectedPerson = (selectedPerson===idx) ? null : idx;
-    document.querySelectorAll('.person-card').forEach((c,i)=> c.classList.toggle('active', i===selectedPerson));
-    renderAgenda();
-  }
+  /* ---------- To-Do's: je Person + Gemeinsamer Haushalt, mit Bearbeiten, Löschen, Erledigt-Historie ---------- */
+  const TODO_LISTS = ['Mama','Papa','Matteo','Laurin','Haushalt'];
+  const todoState = {};
+  TODO_LISTS.forEach(n => todoState[n] = { active: [], done: [] });
+  let todoIdSeq = 1;
 
-  function setView(v){
-    const showMonth = v==='monat';
-    document.getElementById('monthStub').classList.toggle('show', showMonth);
-    agendaList.style.display = showMonth ? 'none' : '';
-    document.getElementById('btnViewHeute').classList.toggle('active', !showMonth);
-    document.getElementById('btnViewMonat').classList.toggle('active', showMonth);
-  }
-
-  const legend = document.getElementById('legend');
-  people.forEach(p=>{ legend.innerHTML += `<span><span class="dot" style="background:${p.color}"></span>${p.name}</span>`; });
-
-  const personalTodos = {
-    Mama:   ['Wocheneinkauf planen', 'Elternabend vorbereiten'],
-    Papa:   ['Auto zur Inspektion bringen', 'Rasen mähen'],
-    Matteo: ['Hausaufgaben Mathe', 'Zimmer aufräumen'],
-    Laurin: ['Fußballschuhe putzen', 'Leseheft fertig machen'],
-  };
-
-  const familyGrid = document.getElementById('familyGrid');
-  function renderFamilyGrid(){
-    familyGrid.innerHTML = '';
-    const dayItems = allEvents.filter(e=>e.date===selectedDate && e.personal);
-    people.forEach((p, idx)=>{
-      const myEvents = dayItems.filter(a => a.who.includes(idx));
+  const todoGrid = document.getElementById('todoGrid');
+  function renderTodoGrid(){
+    todoGrid.innerHTML = '';
+    TODO_LISTS.forEach(name=>{
       const card = document.createElement('div');
-      card.className = 'person-card';
-      card.onclick = ()=> setPersonFilter(idx);
+      card.className = 'card todo-card';
+      const title = name==='Haushalt' ? 'Gemeinsamer Haushalt' : name;
       card.innerHTML = `
-        <div class="person-head">
-          <div class="avatar" style="background:${p.color}">${p.initial}</div>
-          <div><b>${p.name}</b><span>${myEvents.length} eigene(r) Termin${myEvents.length===1?'':'e'}</span></div>
+        <h2>${title}</h2>
+        <ul class="todo-list" id="todo-active-${name}"></ul>
+        <div class="add-row">
+          <input type="text" id="todo-input-${name}" placeholder="Aufgabe hinzufügen…">
+          <button onclick="addTodo('${name}')">+</button>
         </div>
-        <div class="person-events">${myEvents.map(e=>`<div class="pe-item"><b>${e.time}</b><span>${e.title}</span></div>`).join('') || '<div class="pe-item" style="opacity:.6;">Keine eigenen Termine</div>'}</div>
-        <ul class="person-todo" id="todo-${p.name}"></ul>
-        <div class="add-row mini-add-row">
-          <input type="text" id="todoInput-${p.name}" placeholder="Aufgabe für ${p.name}…" onclick="event.stopPropagation()">
-          <button onclick="event.stopPropagation(); addPersonTodo('${p.name}')">+</button>
-        </div>
+        <div class="done-toggle" onclick="toggleDoneList('${name}')">Erledigt (<span id="done-count-${name}">0</span>) anzeigen</div>
+        <ul class="todo-list done-list" id="todo-done-${name}"></ul>
       `;
-      familyGrid.appendChild(card);
-      const ul = card.querySelector(`#todo-${p.name}`);
-      personalTodos[p.name].forEach(text=>{
-        const li = document.createElement('li');
-        li.innerHTML = `<span class="mini-checkbox"></span><span class="txt">${text}</span><span class="del-x" onclick="event.stopPropagation(); this.parentElement.remove();">×</span>`;
-        li.querySelector('.mini-checkbox').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
-        li.querySelector('.txt').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
-        ul.appendChild(li);
+      todoGrid.appendChild(card);
+      card.querySelector(`#todo-input-${name}`).addEventListener('keyup', (e)=>{
+        if(e.key==='Enter') addTodo(name);
       });
     });
+    TODO_LISTS.forEach(renderTodoList);
   }
-  function addPersonTodo(name){
-    const input = document.getElementById(`todoInput-${name}`);
+  function renderTodoList(name){
+    const st = todoState[name];
+    const activeUl = document.getElementById(`todo-active-${name}`);
+    const doneUl = document.getElementById(`todo-done-${name}`);
+    activeUl.innerHTML = '';
+    doneUl.innerHTML = '';
+    st.active.forEach(item=>{
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="checkbox" onclick="toggleTodo('${name}',${item.id})"></span><span class="todo-text" ondblclick="editTodo('${name}',${item.id})">${item.text}</span><span class="del-x" onclick="deleteTodo('${name}',${item.id})">×</span>`;
+      activeUl.appendChild(li);
+    });
+    st.done.forEach(item=>{
+      const li = document.createElement('li');
+      li.className = 'done';
+      li.innerHTML = `<span class="checkbox" onclick="toggleTodo('${name}',${item.id})"></span><span class="todo-text">${item.text}</span><span class="del-x" onclick="deleteTodo('${name}',${item.id})">×</span>`;
+      doneUl.appendChild(li);
+    });
+    document.getElementById(`done-count-${name}`).textContent = st.done.length;
+    updateHero();
+  }
+  function addTodo(name){
+    const input = document.getElementById(`todo-input-${name}`);
     const val = input.value.trim();
     if(!val) return;
-    const ul = document.getElementById(`todo-${name}`);
-    const li = document.createElement('li');
-    li.innerHTML = `<span class="mini-checkbox"></span><span class="txt">${val}</span><span class="del-x" onclick="event.stopPropagation(); this.parentElement.remove();">×</span>`;
-    li.querySelector('.mini-checkbox').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
-    li.querySelector('.txt').onclick = (ev)=>{ ev.stopPropagation(); li.classList.toggle('done'); };
-    ul.appendChild(li);
+    todoState[name].active.push({ id: todoIdSeq++, text: val });
+    renderTodoList(name);
     input.value = '';
+    input.focus();
   }
-  renderFamilyGrid();
-  renderAgenda();
+  function toggleTodo(name, id){
+    const st = todoState[name];
+    let item = st.active.find(i=>i.id===id);
+    if(item){ st.active = st.active.filter(i=>i.id!==id); st.done.unshift(item); }
+    else{
+      item = st.done.find(i=>i.id===id);
+      if(item){ st.done = st.done.filter(i=>i.id!==id); st.active.push(item); }
+    }
+    renderTodoList(name);
+  }
+  function deleteTodo(name, id){
+    const st = todoState[name];
+    st.active = st.active.filter(i=>i.id!==id);
+    st.done = st.done.filter(i=>i.id!==id);
+    renderTodoList(name);
+  }
+  function editTodo(name, id){
+    const st = todoState[name];
+    const item = st.active.find(i=>i.id===id) || st.done.find(i=>i.id===id);
+    if(!item) return;
+    const li = event.target.closest('li');
+    const span = li.querySelector('.todo-text');
+    const input = document.createElement('input');
+    input.type = 'text'; input.value = item.text; input.className = 'todo-text-input';
+    span.replaceWith(input);
+    input.focus();
+    function save(){ item.text = input.value.trim() || item.text; renderTodoList(name); }
+    input.addEventListener('keyup', (e)=>{ if(e.key==='Enter') save(); });
+    input.addEventListener('blur', save);
+  }
+  function toggleDoneList(name){
+    const el = document.getElementById(`todo-done-${name}`);
+    el.classList.toggle('show');
+  }
+  renderTodoGrid();
 
   /* ---------- Essensplaner ---------- */
   const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
@@ -1045,54 +1027,30 @@
   function startShopping(){
     const list = shopState.filter(i=>!i.done);
     if(list.length===0){ alert('Die Einkaufsliste ist leer.'); return; }
-    let msg = 'Bitte prüfe für mein Familienboard, wo es aktuell Angebote gibt, und schlage mir 1-2 Geschäfte (Billa, Eurospar, Hofer, Lidl in Marchtrenk) vor, mit denen ich alles abdecke:\n\n';
+    let msg = 'Ich möchte die u.a. Zutaten einkaufen. Suche mir aus den aktuellen Angeboten von Eurospar, Hofer, Lidl & Billa die günstigsten Angebote raus (Oberösterreich) und schicke mir eine Zusammenfassung davon. Ich möchte nicht in alle 4 Supermärkte fahren müssen. Ich will einfach eine klare Information haben, wo der Einkauf dieses Mal am günstigsten wäre. Dazu sollst du die aktuellen Angebote durchforsten. Achte dabei auf "1+1" bzw. "Ab 2 Packungen"-Angebote. Das musst du unbedingt mitanführen wenn so etwas im Angebot sein sollte.\n\nZutaten:\n';
     CATEGORY_ORDER.forEach(cat=>{
       const catItems = list.filter(i=>i.category===cat);
       if(catItems.length===0) return;
-      msg += `${cat}:\n`;
       catItems.forEach(i=> msg += `- ${i.name}${i.count>1?' ×'+i.count:''}\n`);
     });
     navigator.clipboard.writeText(msg).then(()=>{
-      document.getElementById('shopPrompt').textContent = 'In die Zwischenablage kopiert! Füge das im Chat bei Claude ein – du bekommst dann Angebots-Check und einen Vorschlag, mit 1-2 Geschäften auszukommen.';
+      document.getElementById('shopPrompt').textContent = 'In die Zwischenablage kopiert! Füge das in einem neuen Chat bei Claude ein.';
     }).catch(()=>{
       document.getElementById('shopPrompt').textContent = msg;
     });
     document.getElementById('shopPrompt').classList.add('show');
   }
 
-  /* ---------- Gemeinsamer Haushalt (einfache Liste) ---------- */
-  const choreItems = ['Altpapier rausbringen','Küche kehren','Blumen gießen'];
-  function renderChoreList(){
-    const ul = document.getElementById('choreList');
-    choreItems.forEach(text=> addChoreLine(text));
-  }
-  function addChoreLine(text){
-    const ul = document.getElementById('choreList');
-    const li = document.createElement('li');
-    li.innerHTML = `<span class="checkbox"></span><span>${text}</span><span class="del-x" onclick="event.stopPropagation(); this.parentElement.remove();">×</span>`;
-    li.querySelector('.checkbox').onclick = ()=> li.classList.toggle('done');
-    li.querySelector('span:nth-child(2)').onclick = ()=> li.classList.toggle('done');
-    ul.appendChild(li);
-  }
-  renderChoreList();
-  function addChore(){
-    const input = document.getElementById('choreInput');
-    const val = input.value.trim();
-    if(!val) return;
-    addChoreLine(val);
-    input.value = '';
-  }
 
   /* ---------- Gäste-WLAN QR (Test) ---------- */
   try{
     new QRCode(document.getElementById('guestWifiQr'), {
       text: 'WIFI:T:WPA;S:Familie-Gast;P:Test1234;;',
-      width: 130, height: 130,
-      colorDark: '#232821', colorLight: '#F6F4EA'
+      width: 130, height: 130, colorDark: '#232821', colorLight: '#F6F4EA'
     });
   }catch(e){ document.getElementById('guestWifiQr').textContent = 'QR-Code konnte nicht geladen werden.'; }
 
-  /* ---------- Route planen: Vorschau nach Enter, externer Button darunter ---------- */
+  /* ---------- Route planen ---------- */
   function previewRoute(){
     const from = document.getElementById('routeFrom').value.trim() || 'Marchtrenk';
     const to = document.getElementById('routeTo').value.trim();
@@ -1110,7 +1068,39 @@
   document.getElementById('routeTo').addEventListener('keyup', (e)=>{ if(e.key==='Enter') previewRoute(); });
   document.getElementById('routeFrom').addEventListener('keyup', (e)=>{ if(e.key==='Enter') previewRoute(); });
 
-  /* ---------- Regenradar: läuft komplett über das Windy-iframe oben, kein eigener JS-Code nötig ---------- */
+  /* ---------- Müllkalender: alle Entsorgungen des nächsten Termins, Popup falls morgen ---------- */
+  const TRASH_BIN_STYLE = {
+    'Bioabfall': {cls:'green', label:'Biotonne'},
+    'Altpapier': {cls:'blue', label:'Altpapier'},
+    'Gelber Sack': {cls:'yellow', label:'Gelber Sack'},
+    'Restabfall': {cls:'grey', label:'Restmülltonne'},
+  };
+  let trashWarned = false;
+  function updateTrashCard(){
+    const upcomingDates = [...new Set(trashEvents.filter(t=>t.date>=TODAY_STR).map(t=>t.date))].sort();
+    const list = document.getElementById('trashList');
+    if(!upcomingDates.length){
+      list.innerHTML = '<span class="empty-note">Keine anstehenden Müll-Termine gefunden.</span>';
+      return;
+    }
+    const nearestDate = upcomingDates[0];
+    const types = trashEvents.filter(t=>t.date===nearestDate).map(t=>t.type);
+    let when;
+    if(nearestDate === TODAY_STR) when = 'heute';
+    else if(nearestDate === TOMORROW_STR) when = 'morgen';
+    else when = parseDateStr(nearestDate).toLocaleDateString('de-DE',{weekday:'long', day:'numeric', month:'numeric'});
+
+    list.innerHTML = types.map(type=>{
+      const style = TRASH_BIN_STYLE[type] || {cls:'grey', label:type};
+      return `<div class="trash-row"><div class="bin ${style.cls}"></div><div><b>${style.label}</b><span>${when} · bitte rechtzeitig rausstellen</span></div></div>`;
+    }).join('');
+
+    if(nearestDate === TOMORROW_STR && !trashWarned){
+      trashWarned = true;
+      queueWarning('🗑️', `Morgen früh:\n${types.join('\n')}\n\nBitte rechtzeitig rausstellen.`);
+    }
+    updateHero();
+  }
 
   /* ---------- Live-Wetter (Open-Meteo, kostenlos, kein API-Key) ---------- */
   const HOME_LAT = 48.1833, HOME_LON = 14.1167; // Marchtrenk, Oberösterreich
@@ -1124,13 +1114,8 @@
     if([95,96,99].includes(c)) return {i:'⛈️', t:'Gewitter'};
     return {i:'☁️', t:'Bewölkt'};
   };
-  const uvLabel = (uv)=>{
-    if(uv<3) return 'niedrig';
-    if(uv<6) return 'mittel';
-    if(uv<8) return 'hoch';
-    if(uv<11) return 'sehr hoch';
-    return 'extrem';
-  };
+  const uvLabel = (uv)=>{ if(uv<3) return 'niedrig'; if(uv<6) return 'mittel'; if(uv<8) return 'hoch'; if(uv<11) return 'sehr hoch'; return 'extrem'; };
+  let rainWarned = false;
 
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${HOME_LAT}&longitude=${HOME_LON}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max&hourly=temperature_2m,precipitation_probability,weathercode&timezone=auto&forecast_days=7`)
     .then(r=>r.json())
@@ -1139,9 +1124,7 @@
       const cur = wcodeMap(cw.weathercode);
       document.getElementById('heroIcon').textContent = cur.i;
       document.getElementById('heroTemp').textContent = Math.round(cw.temperature) + '°';
-      document.getElementById('heroMeta').innerHTML = `${cur.t}<br><b>${Math.round(d.daily.temperature_2m_max[0])}°</b> / ${Math.round(d.daily.temperature_2m_min[0])}° heute<br>Marchtrenk`;
-      document.getElementById('sideTemp').textContent = Math.round(cw.temperature) + '°';
-      document.getElementById('sideCond').textContent = `${cur.t}, ${d.daily.precipitation_probability_max[0]}% Regen`;
+      document.getElementById('heroMeta').textContent = `${cur.t} · ${Math.round(d.daily.temperature_2m_max[0])}° / ${Math.round(d.daily.temperature_2m_min[0])}°`;
       const uv = d.daily.uv_index_max[0];
       document.getElementById('uvBadge').textContent = `UV-Index heute: ${uv.toFixed(1)} (${uvLabel(uv)})`;
 
@@ -1160,7 +1143,7 @@
         const hourlyRow = document.getElementById('hourlyRow');
         hourlyRow.innerHTML = '';
         let firstRainHour = null;
-        for(let i=startIdx; i<d.hourly.time.length && toDateStr(new Date(d.hourly.time[i]))===TODAY_STR; i++){
+        for(let i=startIdx; i<startIdx+12 && i<d.hourly.time.length; i++){
           const hh = new Date(d.hourly.time[i]).toLocaleTimeString('de-DE', {hour:'2-digit'});
           const ic = wcodeMap(d.hourly.weathercode[i]).i;
           const pop = d.hourly.precipitation_probability[i];
@@ -1168,9 +1151,12 @@
           if(pop >= 50 && firstRainHour === null){ firstRainHour = {hh, pop}; }
         }
         if(hourlyRow.children.length === 0){
-          hourlyRow.innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Für heute keine Stundendaten mehr verfügbar.</span>';
+          hourlyRow.innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Keine Stundendaten verfügbar.</span>';
         }
-        if(firstRainHour){ showRainWarning(firstRainHour.hh, firstRainHour.pop); }
+        if(firstRainHour && !rainWarned){
+          rainWarned = true;
+          queueWarning('🌧️', `Für ${firstRainHour.hh} Uhr sind ${firstRainHour.pop}% Regenwahrscheinlichkeit in Marchtrenk vorhergesagt.`);
+        }
       }catch(err){
         document.getElementById('hourlyRow').innerHTML = '<span style="font-size:12px; color:var(--ink-soft);">Regen-Ausblick konnte nicht geladen werden.</span>';
       }
@@ -1179,43 +1165,10 @@
       document.getElementById('uvBadge').textContent = 'UV-Index aktuell nicht abrufbar';
     });
 
-  function showRainWarning(hh, pop){
-    document.getElementById('rainWarnText').textContent = `Für ${hh} Uhr sind heute ${pop}% Regenwahrscheinlichkeit in Marchtrenk vorhergesagt.`;
-    document.getElementById('rainWarnOverlay').style.display = 'flex';
-  }
-  function closeRainWarn(){
-    document.getElementById('rainWarnOverlay').style.display = 'none';
-  }
-
-
   /* ---------- Google-Anmeldung & echter Kalender ---------- */
-  const TRASH_BIN_STYLE = {
-    'Bioabfall': {cls:'green', label:'Biotonne'},
-    'Altpapier': {cls:'blue', label:'Altpapier'},
-    'Gelber Sack': {cls:'yellow', label:'Gelber Sack'},
-    'Restabfall': {cls:'grey', label:'Restmülltonne'},
-  };
-  function updateTrashCard(){
-    const upcoming = trashEvents.filter(t=>t.date >= TODAY_STR).sort((a,b)=>a.date.localeCompare(b.date))[0];
-    if(!upcoming) return;
-    const style = TRASH_BIN_STYLE[upcoming.type] || {cls:'grey', label:upcoming.type};
-    const bin = document.getElementById('trashBinIcon');
-    bin.className = 'bin ' + style.cls;
-    document.getElementById('trashLabel').textContent = style.label;
-    let when;
-    if(upcoming.date === TODAY_STR) when = 'heute';
-    else{
-      const tmr = new Date(TODAY); tmr.setDate(tmr.getDate()+1);
-      when = (upcoming.date === toDateStr(tmr)) ? 'morgen' : parseDateStr(upcoming.date).toLocaleDateString('de-DE',{weekday:'long', day:'numeric', month:'numeric'});
-    }
-    document.getElementById('trashSub').textContent = `${when} · bitte rechtzeitig rausstellen`;
-  }
-
   const GOOGLE_CLIENT_ID = '834201109275-au15o6plrp4iv4a007bcupm7pmhqvia4.apps.googleusercontent.com';
   const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
-  // Trag hier die EXAKTEN Kalendernamen ein, sobald du sie im Debug-Kasten siehst.
-  // 0=Mama, 1=Papa, 2=Matteo, 3=Laurin, 'family' = zählt für alle vier.
   const CALENDAR_PERSON_MAP = {
     'Familie': 'family',
     'Haus - Regelmäßige Wartungen': 'family',
@@ -1306,16 +1259,19 @@
       trashEvents = newTrash;
       renderWeekStrip();
       renderAgenda();
-      renderFamilyGrid();
+      updateHero();
       updateTrashCard();
       const todayCount = allEvents.filter(e=>e.date===TODAY_STR).length;
       document.getElementById('googleStatus').textContent = `Verbunden – ${todayCount} Termin(e) heute, mehrere Wochen geladen.`;
-      document.querySelector('.draft-badge').textContent = 'Kalender live · Essensplaner/Wetter teils Beispiel bzw. live';
+      
     }catch(e){
       document.getElementById('googleStatus').textContent = 'Kalender konnten nicht geladen werden.';
     }
   }
 
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
