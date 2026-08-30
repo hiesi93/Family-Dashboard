@@ -88,7 +88,8 @@
 
   .agenda-item{ display:flex; gap: 12px; align-items:flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
   .agenda-item:first-of-type{ border-top:none; }
-  .agenda-time{ font-family:'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--ink-soft); width: 46px; flex-shrink:0; padding-top:2px;}
+  .agenda-time{ font-family:'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--ink-soft); width: 46px; flex-shrink:0; padding-top:2px; white-space:nowrap; }
+  .agenda-time.allday{ width: 72px; }
   .agenda-bar{ width:4px; border-radius:3px; align-self:stretch; flex-shrink:0; }
   .agenda-body b{ display:block; font-size:14.5px; font-weight:600; }
   .agenda-body span{ font-size:12.5px; color: var(--ink-soft); }
@@ -680,7 +681,8 @@
     dayItems.forEach(a=>{
       const el = document.createElement('div');
       el.className = 'agenda-item';
-      el.innerHTML = `<div class="agenda-time">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${a.title}</b><span class="who">${a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ')}</span></div>`;
+      const timeClass = 'agenda-time' + (a.time==='Ganztägig' ? ' allday' : '');
+      el.innerHTML = `<div class="${timeClass}">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${a.title}</b><span class="who">${a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ')}</span></div>`;
       agendaList.appendChild(el);
     });
   }
