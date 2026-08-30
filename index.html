@@ -44,10 +44,12 @@
   .fc-day .ic{ font-size:15px; margin-top:2px; }
   .fc-day .t{ font-size: 12.5px; color: var(--ink); font-weight:600; margin-top:2px; }
 
-  .section-wrap{ margin-bottom: 22px; }
-  .section-move{ display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; }
-  .section-move button{ border:1px solid var(--line); background: var(--card); color: var(--ink-soft); width:26px; height:26px; border-radius:8px; cursor:pointer; font-size:12px; }
-  .section-move button:hover{ background: var(--ink); color: var(--card); }
+  .section-wrap{ margin-bottom: 22px; transition: opacity .15s ease; }
+  .section-wrap.dragging{ opacity: 0.4; }
+  .section-wrap.drag-over{ outline: 2px dashed var(--sky); outline-offset: 4px; border-radius: var(--radius); }
+  .drag-handle{ display:flex; justify-content:flex-end; align-items:center; gap:6px; margin-bottom:4px; color: var(--ink-soft); font-size:11px; cursor:grab; -webkit-user-select:none; user-select:none; }
+  .drag-handle:active{ cursor:grabbing; }
+  .drag-handle .grip{ font-size:13px; letter-spacing:1px; }
 
   .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; overflow:hidden; }
   .card h2{ font-family:'Fraunces', serif; font-size: 19px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
@@ -291,8 +293,8 @@
   <!-- ============ TAB: ALLGEMEINES ============ -->
   <div id="panel-general">
 
-    <div class="section-wrap" id="sec-hero" data-sec="hero">
-      <div class="section-move"><button onclick="moveSection('hero',-1)">▲</button><button onclick="moveSection('hero',1)">▼</button></div>
+    <div class="section-wrap" id="sec-hero" data-sec="hero" draggable="true">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="hero-split">
         <div class="hero-left">
           <p class="eyebrow" id="heroEyebrow">–</p>
@@ -317,8 +319,8 @@
       <div id="calendarDebug" class="calendar-debug"></div>
     </div>
 
-    <div class="section-wrap" id="sec-week" data-sec="week">
-      <div class="section-move"><button onclick="moveSection('week',-1)">▲</button><button onclick="moveSection('week',1)">▼</button></div>
+    <div class="section-wrap" id="sec-week" data-sec="week" draggable="true">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <div class="week-nav">
           <button onclick="shiftWeek(-1)">‹ Woche</button>
@@ -336,8 +338,8 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-heute" data-sec="heute">
-      <div class="section-move"><button onclick="moveSection('heute',-1)">▲</button><button onclick="moveSection('heute',1)">▼</button></div>
+    <div class="section-wrap" id="sec-heute" data-sec="heute" draggable="true">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <h2 id="heuteTitle">Heute</h2>
         <div class="legend-filter" id="legendFilterRow"></div>
@@ -345,16 +347,16 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-muell" data-sec="muell">
-      <div class="section-move"><button onclick="moveSection('muell',-1)">▲</button><button onclick="moveSection('muell',1)">▼</button></div>
+    <div class="section-wrap" id="sec-muell" data-sec="muell" draggable="true">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card trash-card">
         <h2>Müllkalender</h2>
         <div class="trash-list" id="trashList"><span class="empty-note">Noch keine Müll-Termine geladen.</span></div>
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-radar" data-sec="radar">
-      <div class="section-move"><button onclick="moveSection('radar',-1)">▲</button><button onclick="moveSection('radar',1)">▼</button></div>
+    <div class="section-wrap" id="sec-radar" data-sec="radar" draggable="true">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <h2>Regenradar</h2>
         <a href="https://www.wetteronline.at/regenradar/marchtrenk?mode=interactive&wrp=periodPrognose24h" target="_blank" class="radar-cta">
@@ -370,8 +372,8 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-wifi" data-sec="wifi">
-      <div class="section-move"><button onclick="moveSection('wifi',-1)">▲</button><button onclick="moveSection('wifi',1)">▼</button></div>
+    <div class="section-wrap" id="sec-wifi" data-sec="wifi" draggable="true">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card wifi-card">
         <h2 style="justify-content:center;">Gäste-WLAN</h2>
         <span class="test-tag">NUR TEST</span>
@@ -380,8 +382,8 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-route" data-sec="route">
-      <div class="section-move"><button onclick="moveSection('route',-1)">▲</button><button onclick="moveSection('route',1)">▼</button></div>
+    <div class="section-wrap" id="sec-route" data-sec="route" draggable="true">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <h2>Route planen</h2>
         <div class="route-form">
@@ -438,11 +440,11 @@
     </div>
   </div>
 
-  <footer>Familienboard · Reihenfolge der Abschnitte in "Allgemeines" per ▲▼ anpassbar (aktuell pro Sitzung, dauerhafte Speicherung folgt)</footer>
+  <footer>Familienboard · Abschnitte in "Allgemeines" per Drag &amp; Drop verschiebbar · alle Eingaben werden dauerhaft in diesem Browser gespeichert</footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer onload="initGoogle()"></script>
+<script src="https://accounts.google.com/gsi/client" defer onload="initGoogle()"></script>
 <script>
   /* ---------- Zugangscode-Sperre ---------- */
   const FAMILY_CODE = '2026'; // <- hier euren eigenen Code eintragen
@@ -484,13 +486,59 @@
     setTimeout(showNextWarning, 300);
   }
 
-  /* ---------- Abschnitte in "Allgemeines" verschieben (Sitzung, siehe Hinweis unten) ---------- */
-  function moveSection(id, dir){
-    const el = document.getElementById('sec-'+id);
-    const parent = el.parentElement;
-    if(dir === -1 && el.previousElementSibling){ parent.insertBefore(el, el.previousElementSibling); }
-    if(dir === 1 && el.nextElementSibling){ parent.insertBefore(el.nextElementSibling, el); }
+  /* ---------- Dauerhafte Speicherung (localStorage) ---------- */
+  const STORAGE_PREFIX = 'familyboard_';
+  function saveState(key, value){
+    try{ localStorage.setItem(STORAGE_PREFIX+key, JSON.stringify(value)); }catch(e){ /* Speicher voll oder nicht verfügbar */ }
   }
+  function loadState(key, fallback){
+    try{
+      const raw = localStorage.getItem(STORAGE_PREFIX+key);
+      return raw === null ? fallback : JSON.parse(raw);
+    }catch(e){ return fallback; }
+  }
+
+  /* ---------- Abschnitte in "Allgemeines" per Drag & Drop verschieben, Reihenfolge wird gespeichert ---------- */
+  const panelGeneral = document.getElementById('panel-general');
+  let dragEl = null;
+  function initSectionDragDrop(){
+    panelGeneral.querySelectorAll('.section-wrap').forEach(sec=>{
+      sec.addEventListener('dragstart', ()=>{ dragEl = sec; sec.classList.add('dragging'); });
+      sec.addEventListener('dragend', ()=>{
+        sec.classList.remove('dragging');
+        panelGeneral.querySelectorAll('.section-wrap').forEach(s=>s.classList.remove('drag-over'));
+        saveSectionOrder();
+      });
+      sec.addEventListener('dragover', (e)=>{
+        e.preventDefault();
+        if(!dragEl || dragEl === sec) return;
+        panelGeneral.querySelectorAll('.section-wrap').forEach(s=>s.classList.remove('drag-over'));
+        sec.classList.add('drag-over');
+      });
+      sec.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        sec.classList.remove('drag-over');
+        if(!dragEl || dragEl === sec) return;
+        const rect = sec.getBoundingClientRect();
+        const before = (e.clientY - rect.top) < rect.height/2;
+        panelGeneral.insertBefore(dragEl, before ? sec : sec.nextSibling);
+      });
+    });
+  }
+  function saveSectionOrder(){
+    const order = [...panelGeneral.querySelectorAll('.section-wrap')].map(s=>s.dataset.sec);
+    saveState('sectionOrder', order);
+  }
+  function restoreSectionOrder(){
+    const order = loadState('sectionOrder', null);
+    if(!order) return;
+    order.forEach(id=>{
+      const el = document.getElementById('sec-'+id);
+      if(el) panelGeneral.appendChild(el);
+    });
+  }
+  restoreSectionOrder();
+  initSectionDragDrop();
 
   /* ---------- Grunddaten ---------- */
   const people = [
@@ -638,13 +686,17 @@
   }
   renderLegend();
   renderAgenda();
-  updateHero();
 
   /* ---------- To-Do's: je Person + Gemeinsamer Haushalt, mit Bearbeiten, Löschen, Erledigt-Historie ---------- */
   const TODO_LISTS = ['Mama','Papa','Matteo','Laurin','Haushalt'];
+  const savedTodos = loadState('todos', null);
   const todoState = {};
-  TODO_LISTS.forEach(n => todoState[n] = { active: [], done: [] });
-  let todoIdSeq = 1;
+  TODO_LISTS.forEach(n => todoState[n] = (savedTodos && savedTodos[n]) ? savedTodos[n] : { active: [], done: [] });
+  let todoIdSeq = loadState('todoIdSeq', 1);
+  function saveTodos(){
+    saveState('todos', todoState);
+    saveState('todoIdSeq', todoIdSeq);
+  }
 
   const todoGrid = document.getElementById('todoGrid');
   function renderTodoGrid(){
@@ -695,6 +747,7 @@
     const val = input.value.trim();
     if(!val) return;
     todoState[name].active.push({ id: todoIdSeq++, text: val });
+    saveTodos();
     renderTodoList(name);
     input.value = '';
     input.focus();
@@ -707,12 +760,14 @@
       item = st.done.find(i=>i.id===id);
       if(item){ st.done = st.done.filter(i=>i.id!==id); st.active.push(item); }
     }
+    saveTodos();
     renderTodoList(name);
   }
   function deleteTodo(name, id){
     const st = todoState[name];
     st.active = st.active.filter(i=>i.id!==id);
     st.done = st.done.filter(i=>i.id!==id);
+    saveTodos();
     renderTodoList(name);
   }
   function editTodo(name, id){
@@ -725,7 +780,7 @@
     input.type = 'text'; input.value = item.text; input.className = 'todo-text-input';
     span.replaceWith(input);
     input.focus();
-    function save(){ item.text = input.value.trim() || item.text; renderTodoList(name); }
+    function save(){ item.text = input.value.trim() || item.text; saveTodos(); renderTodoList(name); }
     input.addEventListener('keyup', (e)=>{ if(e.key==='Enter') save(); });
     input.addEventListener('blur', save);
   }
@@ -830,15 +885,27 @@
     ],
   };
 
+  /* Eigene, hinzugefügte Gerichte aus früheren Sitzungen wieder einmischen */
+  const customDishes = loadState('customDishes', {});
+  Object.keys(customDishes).forEach(t=>{
+    if(!mealThemes[t]) return;
+    const existingNames = new Set(mealThemes[t].map(d=>d.n));
+    customDishes[t].forEach(d=>{ if(!existingNames.has(d.n)) mealThemes[t].push(d); });
+  });
+
   const themeNames = Object.keys(mealThemes);
-  let currentTheme = themeNames[0];
-  let currentWeek = mealThemes[currentTheme].map(d=>d.n);
+  const savedPlan = loadState('mealPlan', null);
+  let currentTheme = (savedPlan && themeNames.includes(savedPlan.theme)) ? savedPlan.theme : themeNames[0];
+  let currentWeek = (savedPlan && Array.isArray(savedPlan.week) && savedPlan.week.length===7)
+    ? savedPlan.week.map((n,i)=> (mealThemes[currentTheme].some(d=>d.n===n) ? n : mealThemes[currentTheme][i % mealThemes[currentTheme].length].n))
+    : mealThemes[currentTheme].map(d=>d.n);
   let dishIngredients = {};
   function rebuildIngredientLookup(){
     dishIngredients = {};
     themeNames.forEach(t => mealThemes[t].forEach(d => { dishIngredients[d.n] = d.ing; }));
   }
   rebuildIngredientLookup();
+  function saveMealPlan(){ saveState('mealPlan', { theme: currentTheme, week: currentWeek }); }
 
   const themeSelect = document.getElementById('themeSelect');
   themeNames.forEach(t=>{
@@ -850,6 +917,7 @@
   themeSelect.onchange = ()=>{
     currentTheme = themeSelect.value;
     currentWeek = mealThemes[currentTheme].map(d=>d.n);
+    saveMealPlan();
     renderMealRow();
   };
 
@@ -874,7 +942,7 @@
       const dishLabel = document.createElement('div');
       dishLabel.className = 'dish';
       dishLabel.textContent = currentWeek[i];
-      sel.onchange = ()=>{ currentWeek[i] = sel.value; dishLabel.textContent = sel.value; };
+      sel.onchange = ()=>{ currentWeek[i] = sel.value; dishLabel.textContent = sel.value; saveMealPlan(); };
       const line = document.createElement('div');
       line.className = 'dish-line';
       const plus = document.createElement('button');
@@ -895,6 +963,7 @@
     currentTheme = t;
     currentWeek = mealThemes[t].map(d=>d.n);
     themeSelect.value = t;
+    saveMealPlan();
     renderMealRow();
   }
 
@@ -904,7 +973,11 @@
     const name = nameInput.value.trim();
     const ing = ingInput.value.split(',').map(s=>s.trim()).filter(Boolean);
     if(!name || ing.length===0) return;
-    mealThemes[currentTheme].push({n:name, ing:ing});
+    const dish = {n:name, ing:ing};
+    mealThemes[currentTheme].push(dish);
+    if(!customDishes[currentTheme]) customDishes[currentTheme] = [];
+    customDishes[currentTheme].push(dish);
+    saveState('customDishes', customDishes);
     rebuildIngredientLookup();
     renderMealRow();
     nameInput.value=''; ingInput.value='';
@@ -947,8 +1020,9 @@
     return raw.trim();
   }
 
-  let shopState = [];
+  let shopState = loadState('shopping', []);
   let storeFilter = 'Alle';
+  function saveShopping(){ saveState('shopping', shopState); }
 
   function addToShop(rawName){
     const canonical = normalizeName(rawName);
@@ -956,21 +1030,25 @@
     let item = shopState.find(i=>i.key===key);
     if(item){ item.count++; }
     else{ shopState.push({key, name:canonical, count:1, category:categorize(canonical), store:null, done:false}); }
+    saveShopping();
     renderShopList();
   }
 
   function toggleShopDone(key){
     const item = shopState.find(i=>i.key===key);
     if(item) item.done = !item.done;
+    saveShopping();
     renderShopList();
   }
   function removeShopItem(key){
     shopState = shopState.filter(i=>i.key!==key);
+    saveShopping();
     renderShopList();
   }
   function setItemStore(key, store){
     const item = shopState.find(i=>i.key===key);
     if(item) item.store = (item.store===store) ? null : store;
+    saveShopping();
     renderShopList();
   }
   function setStoreFilter(store){
@@ -1014,7 +1092,9 @@
     if(!val) return;
     addToShop(val);
     input.value = '';
+    input.focus();
   }
+  document.getElementById('shopInput').addEventListener('keyup', (e)=>{ if(e.key==='Enter') addItem(); });
 
   function addDishToShopping(dishName){
     const ing = dishIngredients[dishName] || [];
