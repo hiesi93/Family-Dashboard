@@ -14,11 +14,18 @@
     --line: rgba(35,40,33,0.12); --amber: #D98E2B; --amber-soft: #F1D9AE; --sage: #5C7A5E; --sage-soft: #D9E3D6;
     --berry: #A8415B; --berry-soft: #F0D6DD; --sky: #4C7A93; --sky-soft: #D9E6EC;
     --family: #E0651C; --family-soft: #F6DBC4;
+    --uv-text: #7A4E12;
     --radius: 18px; --shadow: 0 1px 2px rgba(35,40,33,0.06), 0 8px 20px -10px rgba(35,40,33,0.18);
+  }
+  body.night-mode{
+    --board: #16180F; --board-2: #1E2116; --card: #20241A; --ink: #D9D6C8; --ink-soft: #8C9583;
+    --line: rgba(217,214,200,0.10); --amber-soft: #4A3A1C; --sage-soft: #263429; --berry-soft: #3A2027; --sky-soft: #1F2E36; --family-soft: #3E2814;
+    --uv-text: #E8C48A;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -10px rgba(0,0,0,0.5);
   }
   * { box-sizing: border-box; }
   html,body{ margin:0; padding:0; }
-  body{ background: radial-gradient(1200px 500px at 15% -10%, var(--board-2), transparent), var(--board); color: var(--ink); font-family: 'Inter', sans-serif; min-height: 100vh; padding: clamp(16px, 3vw, 40px); }
+  body{ background: radial-gradient(1200px 500px at 15% -10%, var(--board-2), transparent), var(--board); color: var(--ink); font-family: 'Inter', sans-serif; min-height: 100vh; padding: clamp(16px, 3vw, 40px); transition: background-color .6s ease, color .6s ease; }
   .wrap{ max-width: 1280px; margin: 0 auto; }
 
   .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px; flex-wrap:wrap; gap:12px; }
@@ -43,7 +50,7 @@
   .weather-now .icon{ font-size:28px; }
   .weather-now .temp{ font-family:'Fraunces', serif; font-size:28px; font-weight:600; }
   .weather-now .cond{ font-size:12.5px; color: var(--ink-soft); }
-  .uv-badge{ display:inline-flex; align-items:center; gap:6px; background: var(--amber-soft); color:#7A4E12; font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; margin-top:8px; }
+  .uv-badge{ display:inline-flex; align-items:center; gap:6px; background: var(--amber-soft); color:var(--uv-text); font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; margin-top:8px; }
   .forecast-row{ display:flex; justify-content:space-between; gap:4px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); overflow-x:auto; }
   .fc-day{ text-align:center; font-size:11px; color: var(--ink-soft); flex-shrink:0; min-width:30px; }
   .fc-day .d{ font-family:'IBM Plex Mono', monospace; text-transform:uppercase; font-size:10px;}
@@ -464,24 +471,51 @@
 <script>
   /* ---------- Zugangscode-Sperre ---------- */
   const FAMILY_CODE = '2026'; // <- hier euren eigenen Code eintragen
+  function unlockBoard(){
+    document.getElementById('gateOverlay').style.display = 'none';
+    document.getElementById('mainWrap').style.display = '';
+    try{ localStorage.setItem('familyboard_gateUnlocked', '1'); }catch(e){}
+  }
   function checkGate(){
     const val = document.getElementById('gateInput').value.trim();
     if(val === FAMILY_CODE){
-      document.getElementById('gateOverlay').style.display = 'none';
-      document.getElementById('mainWrap').style.display = '';
+      unlockBoard();
     }else{
       document.getElementById('gateError').classList.add('show');
     }
   }
   document.getElementById('gateInput').addEventListener('keyup', (e)=>{ if(e.key==='Enter') checkGate(); });
+  // Auf einem Gerät, das den Code schon einmal richtig eingegeben hat (z. B. das
+  // Wand-Tablet), wird der Sperrbildschirm nicht mehr angezeigt.
+  try{
+    if(localStorage.getItem('familyboard_gateUnlocked') === '1') unlockBoard();
+  }catch(e){}
 
-  /* ---------- Tabs ---------- */
+  /* ---------- Tabs (mit Auto-Rücksprung zu "Allgemeines" nach 5 Min. Inaktivität) ---------- */
+  const IDLE_RETURN_MS = 5 * 60 * 1000;
+  let idleReturnTimer = null;
+  function scheduleIdleReturn(){
+    clearTimeout(idleReturnTimer);
+    const activeBtn = document.getElementById('tabBtn-general');
+    if(activeBtn && activeBtn.classList.contains('active')) return; // schon auf "Allgemeines"
+    idleReturnTimer = setTimeout(()=> showTab('general'), IDLE_RETURN_MS);
+  }
   function showTab(name){
     ['general','todos','meals'].forEach(t=>{
       document.getElementById('panel-'+t).style.display = (t===name) ? '' : 'none';
       document.getElementById('tabBtn-'+t).classList.toggle('active', t===name);
     });
+    scheduleIdleReturn();
   }
+  ['pointerdown','keydown'].forEach(evt=> document.addEventListener(evt, scheduleIdleReturn, {passive:true}));
+
+  /* ---------- Nachtabsenkung: dunkleres Farbschema zwischen 22 und 6 Uhr ---------- */
+  function updateNightMode(){
+    const h = new Date().getHours();
+    document.body.classList.toggle('night-mode', h >= 22 || h < 6);
+  }
+  updateNightMode();
+  setInterval(updateNightMode, 60 * 1000);
 
   /* ---------- Warn-Popup-Queue (Regen + Müll teilen sich das gleiche Fenster) ---------- */
   let warnQueue = [];
