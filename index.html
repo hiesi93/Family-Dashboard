@@ -20,10 +20,15 @@
   body{ background: radial-gradient(1200px 500px at 15% -10%, var(--board-2), transparent), var(--board); color: var(--ink); font-family: 'Inter', sans-serif; min-height: 100vh; padding: clamp(16px, 3vw, 40px); }
   .wrap{ max-width: 1280px; margin: 0 auto; }
 
-  .topbar{ display:flex; justify-content:flex-end; margin-bottom: 18px; }
+  .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px; flex-wrap:wrap; gap:12px; }
   .tab-bar{ display:flex; gap:6px; background: var(--card); border-radius:999px; padding:5px; box-shadow: var(--shadow); }
   .tab-bar button{ border:none; background:none; color: var(--ink-soft); font-family:'Inter',sans-serif; font-weight:600; font-size:13px; padding:8px 16px; border-radius:999px; cursor:pointer; }
   .tab-bar button.active{ background: var(--ink); color: var(--card); }
+  .refresh-control{ display:flex; align-items:center; gap:10px; }
+  .refresh-btn{ border:none; background: var(--amber); color:#fff; font-family:'Inter',sans-serif; font-weight:700; font-size:13px; padding:9px 18px; border-radius:999px; cursor:pointer; box-shadow: var(--shadow); }
+  .refresh-btn:hover{ background: var(--ink); }
+  .refresh-btn:disabled{ opacity:.7; cursor:default; }
+  .refresh-meta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--ink-soft); }
 
   .hero-split{ display:grid; grid-template-columns: 1fr 1.3fr; gap:20px; margin-bottom:22px; align-items:stretch; }
   .hero-left{ display:flex; flex-direction:column; justify-content:center; }
@@ -284,6 +289,10 @@
 <div class="wrap" id="mainWrap" style="display:none;">
 
   <div class="topbar">
+    <div class="refresh-control">
+      <button id="refreshBtn" class="refresh-btn" onclick="manualRefresh()">⟳ Aktualisieren</button>
+      <span class="refresh-meta" id="refreshCountdown"></span>
+    </div>
     <div class="tab-bar">
       <button id="tabBtn-general" class="active" onclick="showTab('general')">Allgemeines</button>
       <button id="tabBtn-todos" onclick="showTab('todos')">To Do's</button>
@@ -1321,18 +1330,16 @@
       const cals = data.items || [];
 
       const mapped = cals.filter(c => CALENDAR_PERSON_MAP.hasOwnProperty(c.summary));
-      const unmapped = cals.filter(c => !CALENDAR_PERSON_MAP.hasOwnProperty(c.summary));
       const dbg = document.getElementById('calendarDebug');
-      if(unmapped.length > 0){
+      if(mapped.length === 0){
+        const unmapped = cals.filter(c => !CALENDAR_PERSON_MAP.hasOwnProperty(c.summary));
         dbg.classList.add('show');
         dbg.textContent = 'Gefunden, aber noch keiner Person zugeordnet (Namen an Claude schicken):\n' + unmapped.map(c=>'• '+c.summary).join('\n');
+        document.getElementById('googleStatus').textContent = 'Verbunden, aber noch keine Kalender zugeordnet (siehe Kasten unten).';
+        return;
       }else{
         dbg.classList.remove('show');
         dbg.textContent = '';
-      }
-      if(mapped.length === 0){
-        document.getElementById('googleStatus').textContent = 'Verbunden, aber noch keine Kalender zugeordnet (siehe Kasten unten).';
-        return;
       }
 
       const dayStart = new Date(WEEK_START); dayStart.setDate(dayStart.getDate()-7);
@@ -1358,7 +1365,8 @@
           const trashType = matchTrash(title);
           if(trashType){
             newTrash.push({ date: dateStr, type: trashType });
-            return;
+            // bewusst kein return: Müll-Termine sollen zusätzlich auch als normaler
+            // Kalendereintrag in "Heute"/Woche/Monat auftauchen
           }
           const timeStr = ev.start.dateTime
             ? startDate.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})
@@ -1384,10 +1392,35 @@
   }
 
   /* ---------- Automatische Aktualisierung alle 10 Minuten (kein Seiten-Neuladen, Anmeldung bleibt bestehen) ---------- */
-  setInterval(()=>{
+  const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+  let lastRefreshAt = Date.now();
+
+  function refreshLiveData(){
     loadWeather();
     if(googleAccessToken) loadGoogleCalendars();
-  }, 10 * 60 * 1000);
+    lastRefreshAt = Date.now();
+    updateRefreshCountdown();
+  }
+
+  function manualRefresh(){
+    const btn = document.getElementById('refreshBtn');
+    btn.disabled = true;
+    btn.textContent = '⟳ Aktualisiere…';
+    refreshLiveData();
+    setTimeout(()=>{ btn.disabled = false; btn.textContent = '⟳ Aktualisieren'; }, 1200);
+  }
+
+  function updateRefreshCountdown(){
+    const msLeft = Math.max(0, REFRESH_INTERVAL_MS - (Date.now() - lastRefreshAt));
+    const m = Math.floor(msLeft / 60000);
+    const s = Math.floor((msLeft % 60000) / 1000);
+    const el = document.getElementById('refreshCountdown');
+    if(el) el.textContent = `nächstes Update in ${m}:${String(s).padStart(2,'0')}`;
+  }
+
+  setInterval(refreshLiveData, REFRESH_INTERVAL_MS);
+  setInterval(updateRefreshCountdown, 1000);
+  updateRefreshCountdown();
 
 </script>
 </body>
