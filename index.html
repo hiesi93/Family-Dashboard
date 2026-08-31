@@ -13,6 +13,7 @@
     --board: #E7E4D6; --board-2: #DEDACB; --card: #F6F4EA; --ink: #232821; --ink-soft: #56604F;
     --line: rgba(35,40,33,0.12); --amber: #D98E2B; --amber-soft: #F1D9AE; --sage: #5C7A5E; --sage-soft: #D9E3D6;
     --berry: #A8415B; --berry-soft: #F0D6DD; --sky: #4C7A93; --sky-soft: #D9E6EC;
+    --family: #E0651C; --family-soft: #F6DBC4;
     --radius: 18px; --shadow: 0 1px 2px rgba(35,40,33,0.06), 0 8px 20px -10px rgba(35,40,33,0.18);
   }
   * { box-sizing: border-box; }
@@ -52,9 +53,9 @@
   .section-wrap{ margin-bottom: 22px; transition: opacity .15s ease; }
   .section-wrap.dragging{ opacity: 0.4; }
   .section-wrap.drag-over{ outline: 2px dashed var(--sky); outline-offset: 4px; border-radius: var(--radius); }
-  .drag-handle{ display:flex; justify-content:flex-end; align-items:center; gap:6px; margin-bottom:4px; color: var(--ink-soft); font-size:11px; cursor:grab; -webkit-user-select:none; user-select:none; }
+  .drag-handle{ display:flex; justify-content:flex-end; align-items:center; gap:6px; color: var(--ink-soft); font-size:12.5px; cursor:grab; -webkit-user-select:none; user-select:none; touch-action:none; padding:10px 2px; margin:-10px -2px 0; }
   .drag-handle:active{ cursor:grabbing; }
-  .drag-handle .grip{ font-size:13px; letter-spacing:1px; }
+  .drag-handle .grip{ font-size:16px; letter-spacing:1px; }
 
   .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; overflow:hidden; }
   .card h2{ font-family:'Fraunces', serif; font-size: 19px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
@@ -303,7 +304,7 @@
   <!-- ============ TAB: ALLGEMEINES ============ -->
   <div id="panel-general">
 
-    <div class="section-wrap" id="sec-hero" data-sec="hero" draggable="true">
+    <div class="section-wrap" id="sec-hero" data-sec="hero">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="hero-split">
         <div class="hero-left">
@@ -329,7 +330,7 @@
       <div id="calendarDebug" class="calendar-debug"></div>
     </div>
 
-    <div class="section-wrap" id="sec-week" data-sec="week" draggable="true">
+    <div class="section-wrap" id="sec-week" data-sec="week">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <div class="week-nav">
@@ -348,7 +349,7 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-heute" data-sec="heute" draggable="true">
+    <div class="section-wrap" id="sec-heute" data-sec="heute">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <h2 id="heuteTitle">Heute</h2>
@@ -357,7 +358,7 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-muell" data-sec="muell" draggable="true">
+    <div class="section-wrap" id="sec-muell" data-sec="muell">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card trash-card">
         <h2>Müllkalender</h2>
@@ -365,7 +366,7 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-radar" data-sec="radar" draggable="true">
+    <div class="section-wrap" id="sec-radar" data-sec="radar">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <h2>Regenradar</h2>
@@ -382,7 +383,7 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-wifi" data-sec="wifi" draggable="true">
+    <div class="section-wrap" id="sec-wifi" data-sec="wifi">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card wifi-card">
         <h2 style="justify-content:center;">Gäste-WLAN</h2>
@@ -392,7 +393,7 @@
       </div>
     </div>
 
-    <div class="section-wrap" id="sec-route" data-sec="route" draggable="true">
+    <div class="section-wrap" id="sec-route" data-sec="route">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
         <h2>Route planen</h2>
@@ -508,31 +509,44 @@
     }catch(e){ return fallback; }
   }
 
-  /* ---------- Abschnitte in "Allgemeines" per Drag & Drop verschieben, Reihenfolge wird gespeichert ---------- */
+  /* ---------- Abschnitte in "Allgemeines" per Drag & Drop verschieben, Reihenfolge wird gespeichert ----------
+     Pointer Events statt der nativen HTML5-Drag&Drop-API, weil Letztere auf
+     Touchscreens (Tablet an der Wand) nicht funktioniert. */
   const panelGeneral = document.getElementById('panel-general');
   let dragEl = null;
   function initSectionDragDrop(){
     panelGeneral.querySelectorAll('.section-wrap').forEach(sec=>{
-      sec.addEventListener('dragstart', ()=>{ dragEl = sec; sec.classList.add('dragging'); });
-      sec.addEventListener('dragend', ()=>{
-        sec.classList.remove('dragging');
+      const handle = sec.querySelector('.drag-handle');
+      if(!handle) return;
+
+      handle.addEventListener('pointerdown', (e)=>{
+        dragEl = sec;
+        sec.classList.add('dragging');
+        try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+      });
+
+      handle.addEventListener('pointermove', (e)=>{
+        if(!dragEl) return;
+        e.preventDefault();
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        const overSec = target && target.closest('.section-wrap');
         panelGeneral.querySelectorAll('.section-wrap').forEach(s=>s.classList.remove('drag-over'));
+        if(!overSec || overSec === dragEl) return;
+        overSec.classList.add('drag-over');
+        const rect = overSec.getBoundingClientRect();
+        const before = (e.clientY - rect.top) < rect.height / 2;
+        panelGeneral.insertBefore(dragEl, before ? overSec : overSec.nextSibling);
+      });
+
+      const endDrag = ()=>{
+        if(!dragEl) return;
+        dragEl.classList.remove('dragging');
+        panelGeneral.querySelectorAll('.section-wrap').forEach(s=>s.classList.remove('drag-over'));
+        dragEl = null;
         saveSectionOrder();
-      });
-      sec.addEventListener('dragover', (e)=>{
-        e.preventDefault();
-        if(!dragEl || dragEl === sec) return;
-        panelGeneral.querySelectorAll('.section-wrap').forEach(s=>s.classList.remove('drag-over'));
-        sec.classList.add('drag-over');
-      });
-      sec.addEventListener('drop', (e)=>{
-        e.preventDefault();
-        sec.classList.remove('drag-over');
-        if(!dragEl || dragEl === sec) return;
-        const rect = sec.getBoundingClientRect();
-        const before = (e.clientY - rect.top) < rect.height/2;
-        panelGeneral.insertBefore(dragEl, before ? sec : sec.nextSibling);
-      });
+      };
+      handle.addEventListener('pointerup', endDrag);
+      handle.addEventListener('pointercancel', endDrag);
     });
   }
   function saveSectionOrder(){
@@ -658,7 +672,7 @@
   const agendaList = document.getElementById('agendaList');
   const heuteTitle = document.getElementById('heuteTitle');
   const LEGEND_ITEMS = [
-    { key:'family', label:'Familie', color:'var(--ink-soft)' },
+    { key:'family', label:'Familie', color:'var(--family)' },
     { key:0, label:'Mama', color:'var(--berry)' },
     { key:1, label:'Papa', color:'var(--sky)' },
   ];
@@ -1372,7 +1386,8 @@
             ? startDate.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})
             : 'Ganztägig';
           const who = personIdx === 'family' ? [0,1,2,3] : [personIdx];
-          newEvents.push({ date: dateStr, time:timeStr, title, who, color: people[who[0]].color, personal: personIdx !== 'family' });
+          const barColor = personIdx === 'family' ? 'var(--family)' : people[who[0]].color;
+          newEvents.push({ date: dateStr, time:timeStr, title, who, color: barColor, personal: personIdx !== 'family' });
         });
       }
       newEvents.sort((a,b)=> a.date===b.date ? a.time.localeCompare(b.time) : a.date.localeCompare(b.date));
