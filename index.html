@@ -118,6 +118,7 @@
   .hr-col .ic{ font-size:16px; margin:4px 0; }
   .hr-col .p{ font-size:12px; font-weight:600; color: var(--sky); }
 
+  .radar-frame{ width:100%; height:340px; border:none; border-radius:12px; display:block; }
   .radar-cta{ display:flex; align-items:center; gap:16px; background: var(--board); border-radius:14px; padding:18px 20px; text-decoration:none; color: var(--ink); }
   .radar-cta:hover{ background: var(--sky-soft); }
   .radar-cta-icon{ font-size:32px; flex-shrink:0; }
@@ -238,6 +239,7 @@
     .meal-day{ min-width:150px; scroll-snap-align:start; }
     .add-dish-form input.name, .add-dish-form input.ing{ min-width: 100%; }
     .radar-cta{ flex-wrap:wrap; }
+    .radar-frame{ height:240px; }
     .route-frame{ height:180px; }
     .month-grid{ grid-template-columns: repeat(7, minmax(30px,1fr)); }
     .month-day .dots{ display:none; }
@@ -369,12 +371,15 @@
     <div class="section-wrap" id="sec-radar" data-sec="radar">
       <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
       <div class="card">
-        <h2>Regenradar</h2>
-        <a href="https://www.wetteronline.at/regenradar/marchtrenk?mode=interactive&wrp=periodPrognose24h" target="_blank" class="radar-cta">
+        <h2>Regenradar <span class="tag">Niederschlags-Vorhersage, mehrtägig</span></h2>
+        <iframe class="radar-frame" loading="lazy"
+          src="https://embed.windy.com/embed2.html?lat=48.183&lon=14.117&detailLat=48.183&detailLon=14.117&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1">
+        </iframe>
+        <a href="https://www.windy.com/-Regen-rain?rain,48.183,14.117,9" target="_blank" class="radar-cta" style="margin-top:12px;">
           <span class="radar-cta-icon">🌧️</span>
           <span class="radar-cta-text">
-            <b>Live-Regenradar für Marchtrenk ansehen</b>
-            <span>Öffnet wetteronline.at in einem neuen Tab – interaktiv, mit Zeitregler für die 24h-Prognose.</span>
+            <b>Auf windy.com öffnen</b>
+            <span>Größere, voll interaktive Ansicht in einem neuen Tab.</span>
           </span>
           <span class="radar-cta-arrow">→</span>
         </a>
