@@ -1404,6 +1404,7 @@
   let googleTokenClient = null;
   let googleAccessToken = null;
   let silentAuthPending = false;
+  let isRenewalAttempt = false; // true nur, wenn der stille Versuch gezielt eine abgelaufene Sitzung erneuern soll
 
   function initGoogle(){
     if(typeof google === 'undefined' || !google.accounts) return;
@@ -1412,10 +1413,20 @@
       scope: GOOGLE_SCOPES,
       callback: (resp)=>{
         const wasSilent = silentAuthPending;
+        const wasRenewal = isRenewalAttempt;
         silentAuthPending = false;
+        isRenewalAttempt = false;
         if(resp.error){
-          // Bei einem stillen Hintergrund-Versuch keine alarmierende Meldung zeigen
-          if(!wasSilent){ document.getElementById('googleStatus').textContent = 'Anmeldung nicht möglich, bitte nochmal versuchen.'; }
+          if(wasRenewal){
+            // Stille Erneuerung nach abgelaufener Sitzung ist fehlgeschlagen – das muss
+            // sichtbar sein, sonst bleibt "wird im Hintergrund erneuert…" für immer stehen.
+            document.getElementById('googleStatus').textContent = 'Anmeldung abgelaufen – bitte erneut auf „Mit Google anmelden" klicken.';
+            document.getElementById('googleBtn').textContent = '🔑 Mit Google anmelden';
+            document.getElementById('googleBtn').classList.remove('connected');
+          }else if(!wasSilent){
+            // Bei einem ganz normalen stillen Hintergrund-Versuch keine alarmierende Meldung zeigen
+            document.getElementById('googleStatus').textContent = 'Anmeldung nicht möglich, bitte nochmal versuchen.';
+          }
           return;
         }
         googleAccessToken = resp.access_token;
@@ -1432,6 +1443,7 @@
   function connectGoogle(){
     if(!googleTokenClient){ document.getElementById('googleStatus').textContent = 'Google-Anmeldung lädt noch, bitte kurz warten und nochmal klicken.'; return; }
     silentAuthPending = false;
+    isRenewalAttempt = false;
     googleTokenClient.requestAccessToken({prompt:'consent'});
   }
 
@@ -1439,6 +1451,7 @@
   function silentlyRenewToken(){
     if(!googleTokenClient || silentAuthPending) return;
     silentAuthPending = true;
+    isRenewalAttempt = true;
     googleTokenClient.requestAccessToken({prompt:'none'});
   }
 
