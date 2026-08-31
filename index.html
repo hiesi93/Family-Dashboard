@@ -325,7 +325,7 @@
     <div class="refresh-control">
       <button id="refreshBtn" class="refresh-btn" onclick="manualRefresh()">⟳ Aktualisieren</button>
       <span class="refresh-meta" id="refreshCountdown"></span>
-      <button id="themeToggleBtn" class="theme-toggle-btn" onclick="cycleTheme()">🌓</button>
+      <button id="themeToggleBtn" class="theme-toggle-btn" onclick="cycleTheme()"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2a10 10 0 0 0 0 20V2z" fill="currentColor"/><circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
     </div>
     <div class="tab-bar">
       <button id="tabBtn-general" class="active" onclick="showTab('general')">Allgemeines</button>
@@ -543,6 +543,12 @@
   function setThemePref(pref){
     try{ pref ? localStorage.setItem(THEME_PREF_KEY, pref) : localStorage.removeItem(THEME_PREF_KEY); }catch(e){}
   }
+  // Selbst gezeichnete SVG-Icons statt Emojis: Emoji-Zeichensätze haben je nach
+  // Gerät (v.a. iOS) unsichtbare Ränder im Zeichen, wodurch das Symbol im Kreis
+  // schief/klein wirkt. SVG rendert auf jedem Gerät exakt gleich und zentriert.
+  const ICON_SUN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>';
+  const ICON_MOON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>';
+  const ICON_AUTO = '<svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2a10 10 0 0 0 0 20V2z" fill="currentColor"/><circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
   function updateNightMode(){
     const pref = getThemePref();
     const h = new Date().getHours();
@@ -550,9 +556,9 @@
     document.body.classList.toggle('night-mode', isDark);
     const btn = document.getElementById('themeToggleBtn');
     if(!btn) return;
-    if(pref === 'dark'){ btn.textContent = '🌙'; btn.title = 'Dunkel (manuell) – klicken für Hell erzwingen'; }
-    else if(pref === 'light'){ btn.textContent = '☀️'; btn.title = 'Hell (manuell) – klicken für Automatisch'; }
-    else{ btn.textContent = '🌓'; btn.title = 'Automatisch (Tag/Nacht) – klicken für Hell erzwingen'; }
+    if(pref === 'dark'){ btn.innerHTML = ICON_MOON; btn.title = 'Dunkel (manuell) – klicken für Hell erzwingen'; }
+    else if(pref === 'light'){ btn.innerHTML = ICON_SUN; btn.title = 'Hell (manuell) – klicken für Automatisch'; }
+    else{ btn.innerHTML = ICON_AUTO; btn.title = 'Automatisch (Tag/Nacht) – klicken für Hell erzwingen'; }
   }
   function cycleTheme(){
     const pref = getThemePref();
