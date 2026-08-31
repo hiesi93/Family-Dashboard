@@ -42,11 +42,9 @@
   .tab-bar button.active{ background: var(--ink); color: var(--card); }
   .refresh-control{ display:flex; align-items:center; gap:10px; }
   .refresh-btn{ border:none; background: var(--amber); color:#fff; font-family:'Inter',sans-serif; font-weight:700; font-size:13px; padding:9px 18px; border-radius:999px; cursor:pointer; box-shadow: var(--shadow); }
-  .refresh-btn:hover{ background: var(--ink); }
   .refresh-btn:disabled{ opacity:.7; cursor:default; }
   .refresh-meta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--ink-soft); }
   .theme-toggle-btn{ border:1px solid var(--line); background: var(--card); color: var(--ink); width:36px; height:36px; border-radius:999px; cursor:pointer; font-size:16px; box-shadow: var(--shadow); flex-shrink:0; }
-  .theme-toggle-btn:hover{ background: var(--ink); color: var(--card); }
 
   .hero-split{ display:grid; grid-template-columns: 1fr 1.3fr; gap:20px; margin-bottom:22px; align-items:stretch; }
   .hero-left{ display:flex; flex-direction:column; justify-content:center; }
@@ -76,9 +74,9 @@
   .section-wrap{ margin-bottom: 22px; transition: opacity .15s ease; }
   .section-wrap.dragging{ opacity: 0.4; }
   .section-wrap.drag-over{ outline: 2px dashed var(--sky); outline-offset: 4px; border-radius: var(--radius); }
-  .drag-handle{ display:flex; justify-content:flex-end; align-items:center; gap:6px; color: var(--ink-soft); font-size:12.5px; cursor:grab; -webkit-user-select:none; user-select:none; touch-action:none; padding:10px 2px; margin:-10px -2px 0; }
-  .drag-handle:active{ cursor:grabbing; }
-  .drag-handle .grip{ font-size:16px; letter-spacing:1px; }
+  .drag-handle{ display:flex; justify-content:flex-end; align-items:center; gap:6px; color: var(--ink-soft); font-size:12.5px; -webkit-user-select:none; user-select:none; padding:4px 0; }
+  .drag-handle .grip{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:17px; letter-spacing:1px; cursor:grab; touch-action:none; border-radius:8px; flex-shrink:0; }
+  .drag-handle .grip:active{ cursor:grabbing; background: var(--board); }
 
   .card{ background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; overflow:hidden; }
   .card h2{ font-family:'Fraunces', serif; font-size: 19px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
@@ -86,7 +84,6 @@
 
   .week-nav{ display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
   .week-nav button, .month-nav button{ border:1px solid var(--line); background: var(--card); color: var(--ink); font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; border-radius:999px; padding:6px 14px; cursor:pointer; }
-  .week-nav button:hover, .month-nav button:hover{ background: var(--ink); color: var(--card); }
   .month-toggle{ margin-left:auto; }
   #weekLabel{ font-size:12.5px; color: var(--ink-soft); font-family:'IBM Plex Mono', monospace; }
   .week-strip{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
@@ -145,7 +142,6 @@
 
   .radar-frame{ width:100%; height:340px; border:none; border-radius:12px; display:block; }
   .radar-cta{ display:flex; align-items:center; gap:16px; background: var(--board); border-radius:14px; padding:18px 20px; text-decoration:none; color: var(--ink); }
-  .radar-cta:hover{ background: var(--sky-soft); }
   .radar-cta-icon{ font-size:32px; flex-shrink:0; }
   .radar-cta-text{ flex:1; display:flex; flex-direction:column; gap:4px; }
   .radar-cta-text b{ font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
@@ -160,13 +156,11 @@
   .route-form label{ font-size:11.5px; color: var(--ink-soft); display:block; margin-bottom:4px; }
   .route-form input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); margin-bottom:10px; }
   .route-external-btn{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 10px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:10px; }
-  .route-external-btn:hover{ background: var(--ink); }
   .route-note{ font-size:11.5px; color: var(--ink-soft); margin-top:10px; }
   .route-frame{ width:100%; height:220px; border:none; border-radius:12px; margin-top:10px; }
 
   .google-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin: 0 0 6px; }
   .google-btn{ border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
-  .google-btn:hover{ background: var(--ink); }
   .google-btn.connected{ background: var(--sage); }
   .google-status{ font-size:12px; color: var(--ink-soft); }
   .calendar-debug{ font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:10px 14px; margin: 8px 0 0; display:none; white-space:pre-wrap; }
@@ -184,15 +178,12 @@
   .todo-list li.done .checkbox::after{ opacity:1; }
   .todo-list li.done .todo-text{ text-decoration: line-through; color: var(--ink-soft); }
   .todo-text{ flex:1; cursor:text; padding:2px 4px; border-radius:6px; }
-  .todo-text:hover{ background: var(--board); }
   .todo-text-input{ flex:1; border:1px solid var(--sky); border-radius:6px; padding:2px 6px; font-family:'Inter',sans-serif; font-size:14px; }
   .del-x{ color: var(--ink-soft); font-size:16px; cursor:pointer; padding:0 2px; flex-shrink:0; }
-  .del-x:hover{ color: var(--berry); }
   .add-row{ display:flex; gap:8px; margin-top:12px; }
   .add-row input{ flex:1; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
   .add-row input:focus{ outline:2px solid var(--sage); outline-offset:1px; }
   .add-row button{ border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 0 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; }
-  .add-row button:hover{ background: var(--sage); }
   .done-toggle{ font-size:11.5px; color: var(--ink-soft); margin-top:14px; cursor:pointer; text-decoration:underline; }
   .done-list{ display:none; margin-top:8px; }
   .done-list.show{ display:block; }
@@ -201,21 +192,18 @@
   .meal-controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom: 18px; }
   .meal-controls select{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); }
   .dice-btn{ border:none; background: var(--berry); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; }
-  .dice-btn:hover{ background: var(--ink); }
   .meal-row{ display:grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 18px; }
   .meal-day{ background: var(--board); border-radius: 12px; padding: 12px 10px; display:flex; flex-direction:column; gap:8px; }
   .meal-day .dname{ font-family:'IBM Plex Mono', monospace; font-size: 11px; text-transform:uppercase; letter-spacing:.05em; color: var(--ink-soft); }
   .dish-line{ display:flex; align-items:flex-start; justify-content:space-between; gap:6px; }
   .meal-day .dish{ font-family:'Fraunces', serif; font-size: 13.5px; font-weight:600; line-height:1.25; min-height: 36px; }
   .plus-btn{ border:none; background: var(--sage); color:var(--card); width:20px; height:20px; border-radius:6px; font-size:14px; line-height:1; cursor:pointer; flex-shrink:0; }
-  .plus-btn:hover{ background: var(--ink); }
   .meal-day select{ border:1px solid var(--line); background: var(--card); border-radius:8px; padding: 6px 8px; font-family:'Inter',sans-serif; font-size: 11.5px; color: var(--ink); width:100%; }
   .add-dish-form{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-top:1px solid var(--line); padding-top:16px; }
   .add-dish-form input{ border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 8px 12px; font-family:'Inter',sans-serif; font-size: 13px; color: var(--ink); }
   .add-dish-form input.name{ flex:1; min-width:160px; }
   .add-dish-form input.ing{ flex:2; min-width:220px; }
   .add-dish-form button{ border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 9px 16px; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
-  .add-dish-form button:hover{ background: var(--sage); }
   .add-dish-hint{ width:100%; font-size:11.5px; color: var(--ink-soft); }
 
   .shop-flash{ display:inline-block; font-size:11px; color: var(--sage); font-weight:600; margin-left:6px; opacity:0; transition:opacity .2s ease; }
@@ -235,7 +223,6 @@
   .store-chip{ width:20px; height:20px; border-radius:6px; border:1.5px solid var(--line); background: var(--board); color: var(--ink-soft); font-size:10px; font-weight:700; cursor:pointer; }
   .store-chip.active{ background: var(--sc); border-color: var(--sc); color: var(--card); }
   .shop-start-btn{ width:100%; border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:14px; }
-  .shop-start-btn:hover{ background: var(--berry); }
   .shop-prompt{ display:none; white-space:pre-wrap; font-size:11.5px; color: var(--ink-soft); background: var(--board); border-radius:10px; padding:12px; margin-top:10px; max-height:200px; overflow-y:auto; }
   .shop-prompt.show{ display:block; }
 
@@ -282,7 +269,6 @@
   .gate-sub{ font-size:13px; color: var(--ink-soft); margin:0 0 18px; }
   .gate-box input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 11px 14px; font-family:'IBM Plex Mono', monospace; font-size: 16px; text-align:center; letter-spacing:.15em; margin-bottom:12px; }
   .gate-box button{ width:100%; border:none; background: var(--ink); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:14px; cursor:pointer; }
-  .gate-box button:hover{ background: var(--sage); }
   .gate-error{ color: var(--berry); font-size:12px; margin: 10px 0 0; display:none; }
   .gate-error.show{ display:block; }
 
@@ -292,7 +278,26 @@
   .warn-icon{ font-size:38px; margin-bottom:10px; }
   .warn-box p{ font-size:14px; color: var(--ink); line-height:1.5; margin: 0 0 18px; white-space:pre-line; }
   .warn-box button{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 11px; font-family:'Inter',sans-serif; font-weight:600; font-size:14px; cursor:pointer; }
-  .warn-box button:hover{ background: var(--ink); }
+
+  /* Hover-Effekte nur für Maus/Trackpad, nie für Touch – sonst bleiben Buttons auf
+     Handy/Tablet nach dem Antippen optisch "hängen", bis man woanders hintippt. */
+  @media (hover: hover) and (pointer: fine){
+    .refresh-btn:hover{ background: var(--ink); }
+    .theme-toggle-btn:hover{ background: var(--ink); color: var(--card); }
+    .week-nav button:hover, .month-nav button:hover{ background: var(--ink); color: var(--card); }
+    .radar-cta:hover{ background: var(--sky-soft); }
+    .route-external-btn:hover{ background: var(--ink); }
+    .google-btn:hover{ background: var(--ink); }
+    .todo-text:hover{ background: var(--board); }
+    .del-x:hover{ color: var(--berry); }
+    .add-row button:hover{ background: var(--sage); }
+    .dice-btn:hover{ background: var(--ink); }
+    .plus-btn:hover{ background: var(--ink); }
+    .add-dish-form button:hover{ background: var(--sage); }
+    .shop-start-btn:hover{ background: var(--berry); }
+    .gate-box button:hover{ background: var(--sage); }
+    .warn-box button:hover{ background: var(--ink); }
+  }
 </style>
 </head>
 <body>
@@ -368,6 +373,7 @@
           <button onclick="shiftWeek(-1)">‹ Woche</button>
           <span id="weekLabel"></span>
           <button onclick="shiftWeek(1)">Woche ›</button>
+          <button onclick="goToToday()">📍 Heute</button>
           <button class="month-toggle" onclick="toggleMonthView()" id="monthToggleBtn">📅 Monat</button>
         </div>
         <div class="week-strip" id="weekStrip"></div>
@@ -594,7 +600,10 @@
   let dragEl = null;
   function initSectionDragDrop(){
     panelGeneral.querySelectorAll('.section-wrap').forEach(sec=>{
-      const handle = sec.querySelector('.drag-handle');
+      // Nur das kleine Griff-Symbol ist der Ziehbereich, nicht die ganze Zeile –
+      // sonst rutscht man beim normalen Hoch-/Runterscrollen auf Touch-Geräten
+      // versehentlich in den Verschiebemodus.
+      const handle = sec.querySelector('.drag-handle .grip');
       if(!handle) return;
 
       handle.addEventListener('pointerdown', (e)=>{
@@ -722,6 +731,11 @@
     });
   }
   function shiftWeek(dir){ WEEK_START.setDate(WEEK_START.getDate() + dir*7); renderWeekStrip(); }
+  function goToToday(){
+    WEEK_START = getMonday(TODAY);
+    viewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+    selectDate(TODAY_STR); // rendert Woche, Agenda und – falls sichtbar – auch den Monatsraster neu
+  }
   function selectDate(dStr){
     selectedDate = dStr;
     renderWeekStrip();
@@ -803,7 +817,10 @@
       el.className = 'agenda-item' + (isBirthday ? ' birthday' : '');
       const timeClass = 'agenda-time' + (a.time==='Ganztägig' ? ' allday' : '');
       const titleHtml = (isBirthday && !a.title.includes('🎂') ? '🎂 ' : '') + a.title;
-      el.innerHTML = `<div class="${timeClass}">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${titleHtml}</b><span class="who">${a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ')}</span></div>`;
+      const whoHtml = a.personal === false
+        ? `<span class="dot" style="background:var(--family)"></span>Familie`
+        : a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ');
+      el.innerHTML = `<div class="${timeClass}">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${titleHtml}</b><span class="who">${whoHtml}</span></div>`;
       agendaList.appendChild(el);
     });
   }
