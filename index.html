@@ -1633,17 +1633,8 @@
       const cals = data.items || [];
 
       const mapped = cals.filter(c => CALENDAR_PERSON_MAP.hasOwnProperty(c.summary));
-      const unmapped = cals.filter(c => !CALENDAR_PERSON_MAP.hasOwnProperty(c.summary));
-      const dbg = document.getElementById('calendarDebug');
-      if(unmapped.length > 0){
-        dbg.classList.add('show');
-        dbg.textContent = 'Gefunden, aber noch keiner Person zugeordnet (Namen an Claude schicken):\n' + unmapped.map(c=>'• '+c.summary).join('\n');
-      }else{
-        dbg.classList.remove('show');
-        dbg.textContent = '';
-      }
       if(mapped.length === 0){
-        document.getElementById('googleStatus').textContent = 'Verbunden, aber noch keine Kalender zugeordnet (siehe Kasten unten).';
+        document.getElementById('googleStatus').textContent = 'Verbunden, aber noch keine Kalender zugeordnet.';
         return;
       }
 
