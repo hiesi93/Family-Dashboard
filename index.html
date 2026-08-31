@@ -1281,7 +1281,7 @@
     const from = document.getElementById('routeFrom').value.trim() || 'Marchtrenk';
     const to = document.getElementById('routeTo').value.trim();
     if(!to) return;
-    document.getElementById('routeFrame').src = `https://www.google.com/maps?saddr=${encodeURIComponent(from)}&daddr=${encodeURIComponent(to)}&output=embed`;
+    document.getElementById('routeFrame').src = `https://www.google.com/maps?saddr=${encodeURIComponent(from)}&daddr=${encodeURIComponent(to)}&dirflg=d&output=embed`;
     document.getElementById('routePreviewWrap').style.display = 'block';
     document.getElementById('routeHint').textContent = `Route von ${from} nach ${to}.`;
   }
