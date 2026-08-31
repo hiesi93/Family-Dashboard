@@ -153,6 +153,11 @@
   .wifi-meta{ font-size:12px; color: var(--ink-soft); line-height:1.5; }
   .test-tag{ display:inline-block; background: var(--berry-soft); color: var(--berry); font-size:10.5px; font-weight:700; letter-spacing:.04em; padding:2px 8px; border-radius:999px; margin-bottom:10px; }
 
+  .emergency-grid{ display:grid; grid-template-columns: repeat(6, 1fr); gap:10px; }
+  .emergency-item{ display:flex; flex-direction:column; align-items:center; gap:3px; background: var(--board); border-radius:12px; padding:14px 6px; text-decoration:none; color: var(--ink); text-align:center; }
+  .emergency-item b{ font-family:'Fraunces', serif; font-size:17px; font-weight:600; }
+  .emergency-item span{ font-size:10.5px; color: var(--ink-soft); line-height:1.3; }
+
   .route-form label{ font-size:11.5px; color: var(--ink-soft); display:block; margin-bottom:4px; }
   .route-form input{ width:100%; border:1px solid var(--line); background: var(--board); border-radius:10px; padding: 9px 12px; font-family:'Inter',sans-serif; font-size: 13.5px; color: var(--ink); margin-bottom:10px; }
   .route-external-btn{ width:100%; border:none; background: var(--sky); color: var(--card); border-radius:10px; padding: 10px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:10px; }
@@ -239,6 +244,7 @@
     body{ padding: 12px; }
     .card{ padding: 16px 16px; }
     .hero-left h1{ font-size: 28px; }
+    .emergency-grid{ grid-template-columns: repeat(3, 1fr); }
     .google-bar{ flex-direction:column; align-items:flex-start; gap:6px; }
     .google-btn{ width:100%; }
     .week-strip{ display:flex; overflow-x:auto; gap:8px; padding-bottom:4px; scroll-snap-type:x proximity; grid-template-columns:none; }
@@ -430,6 +436,21 @@
         <span class="test-tag">NUR TEST</span>
         <div id="guestWifiQr"></div>
         <div class="wifi-meta">Netzwerk: <b>Familie-Gast</b><br>Passwort: <b>Test1234</b></div>
+      </div>
+    </div>
+
+    <div class="section-wrap" id="sec-notfall" data-sec="notfall">
+      <div class="drag-handle"><span class="grip">⠿</span> verschieben</div>
+      <div class="card">
+        <h2>Notfallnummern</h2>
+        <div class="emergency-grid">
+          <a class="emergency-item" href="tel:112"><b>112</b><span>Euronotruf</span></a>
+          <a class="emergency-item" href="tel:122"><b>122</b><span>Feuerwehr</span></a>
+          <a class="emergency-item" href="tel:133"><b>133</b><span>Polizei</span></a>
+          <a class="emergency-item" href="tel:144"><b>144</b><span>Rettung</span></a>
+          <a class="emergency-item" href="tel:1450"><b>1450</b><span>Gesundheitsberatung</span></a>
+          <a class="emergency-item" href="tel:+4314064343"><b>01 406 43 43</b><span>Vergiftungsinformation</span></a>
+        </div>
       </div>
     </div>
 
@@ -652,6 +673,11 @@
     order.forEach(id=>{
       const el = document.getElementById('sec-'+id);
       if(el) panelGeneral.appendChild(el);
+    });
+    // Abschnitte, die es beim letzten Speichern noch nicht gab (z.B. neu
+    // hinzugefügte Karten), ans Ende hängen statt sie oben landen zu lassen
+    panelGeneral.querySelectorAll('.section-wrap').forEach(el=>{
+      if(!order.includes(el.dataset.sec)) panelGeneral.appendChild(el);
     });
   }
   restoreSectionOrder();
