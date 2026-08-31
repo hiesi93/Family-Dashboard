@@ -1511,9 +1511,7 @@
       renderAgenda();
       updateHero();
       updateTrashCard();
-      const todayCount = allEvents.filter(e=>e.date===TODAY_STR).length;
-      document.getElementById('googleStatus').textContent = `Verbunden – ${todayCount} Termin(e) heute, mehrere Wochen geladen.`;
-      
+      document.getElementById('googleStatus').textContent = '';
     }catch(e){
       document.getElementById('googleStatus').textContent = 'Kalender konnten nicht geladen werden.';
     }
