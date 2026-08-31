@@ -1,0 +1,13 @@
+{
+  "name": "Familienboard",
+  "short_name": "Familienboard",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#E7E4D6",
+  "theme_color": "#232821",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

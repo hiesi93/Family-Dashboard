@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Familienboard</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-512.png">
+<meta name="theme-color" content="#232821">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Familienboard">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -53,6 +61,9 @@
   .weather-now .temp{ font-family:'Fraunces', serif; font-size:28px; font-weight:600; }
   .weather-now .cond{ font-size:12.5px; color: var(--ink-soft); }
   .uv-badge{ display:inline-flex; align-items:center; gap:6px; background: var(--amber-soft); color:var(--uv-text); font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; margin-top:8px; }
+  .official-warn{ border-left:4px solid; border-radius:8px; padding:8px 10px; margin-top:8px; font-size:12px; line-height:1.4; }
+  .official-warn b{ display:block; font-size:12.5px; margin-bottom:2px; }
+  .official-warn-time{ display:block; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color: var(--ink-soft); margin-top:3px; }
   .forecast-row{ display:flex; justify-content:space-between; gap:4px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); overflow-x:auto; }
   .fc-day{ text-align:center; font-size:11px; color: var(--ink-soft); flex-shrink:0; min-width:30px; }
   .fc-day .d{ font-family:'IBM Plex Mono', monospace; text-transform:uppercase; font-size:10px;}
@@ -102,6 +113,8 @@
   .legend-filter .dot{ width:9px; height:9px; }
 
   .agenda-item{ display:flex; gap: 12px; align-items:flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .agenda-item.birthday{ background: var(--family-soft); border-radius: 12px; padding: 10px 12px; margin: 2px 0; border-top: none; }
+  .agenda-item.birthday + .agenda-item{ border-top: none; }
   .agenda-item:first-of-type{ border-top:none; }
   .agenda-time{ font-family:'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--ink-soft); width: 46px; flex-shrink:0; padding-top:2px; white-space:nowrap; }
   .agenda-time.allday{ width: 72px; }
@@ -332,6 +345,7 @@
             <span class="cond" id="heroMeta">Lädt…</span>
           </div>
           <span class="uv-badge" id="uvBadge">UV-Index wird geladen…</span>
+          <div id="officialWarnBox" style="display:none;"></div>
           <div class="forecast-row" id="forecastRow"></div>
         </div>
       </div>
@@ -762,9 +776,11 @@
     }
     dayItems.forEach(a=>{
       const el = document.createElement('div');
-      el.className = 'agenda-item';
+      const isBirthday = a.title.toLowerCase().includes('geburtstag');
+      el.className = 'agenda-item' + (isBirthday ? ' birthday' : '');
       const timeClass = 'agenda-time' + (a.time==='Ganztägig' ? ' allday' : '');
-      el.innerHTML = `<div class="${timeClass}">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${a.title}</b><span class="who">${a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ')}</span></div>`;
+      const titleHtml = (isBirthday && !a.title.includes('🎂') ? '🎂 ' : '') + a.title;
+      el.innerHTML = `<div class="${timeClass}">${a.time}</div><div class="agenda-bar" style="background:${a.color}"></div><div class="agenda-body"><b>${titleHtml}</b><span class="who">${a.who.map(p=>`<span class="dot" style="background:${people[p].color}"></span>${people[p].name}`).join(' &nbsp; ')}</span></div>`;
       agendaList.appendChild(el);
     });
   }
@@ -1332,6 +1348,44 @@
   }
   loadWeather();
 
+  /* ---------- Amtliche Unwetterwarnungen (GeoSphere Austria / ZAMG, kostenlos, kein API-Key) ---------- */
+  const WARN_LEVEL_STYLE = {
+    1: {label:'Gelbe Warnung', color:'#B8790F', bg:'var(--amber-soft)'},
+    2: {label:'Orange Warnung', color:'#A65314', bg:'#F0D2AE'},
+    3: {label:'Rote Warnung', color:'#A03434', bg:'var(--berry-soft)'},
+  };
+  const officialWarnedIds = new Set();
+  function loadOfficialWarnings(){
+    fetch(`https://warnungen.zamg.at/wsapp/api/getWarningsForCoords?lon=${HOME_LON}&lat=${HOME_LAT}`)
+      .then(r=>r.json())
+      .then(d=>{
+        const warnings = (d.properties && d.properties.warnings) || [];
+        const box = document.getElementById('officialWarnBox');
+        if(!box) return;
+        if(warnings.length === 0){ box.style.display = 'none'; box.innerHTML = ''; return; }
+        box.style.display = '';
+        box.innerHTML = warnings.map(w=>{
+          const p = w.properties;
+          const style = WARN_LEVEL_STYLE[p.warnstufeid] || WARN_LEVEL_STYLE[1];
+          return `<div class="official-warn" style="background:${style.bg}; border-left-color:${style.color};">
+            <b style="color:${style.color}">${style.label}</b>
+            <span>${p.text}</span>
+            <span class="official-warn-time">${p.begin} – ${p.end}</span>
+          </div>`;
+        }).join('');
+        warnings.forEach(w=>{
+          const p = w.properties;
+          const uid = p.warnid + '-' + p.begin;
+          if(officialWarnedIds.has(uid)) return;
+          officialWarnedIds.add(uid);
+          const style = WARN_LEVEL_STYLE[p.warnstufeid] || WARN_LEVEL_STYLE[1];
+          queueWarning('⚠️', `${style.label} (GeoSphere Austria)\n${p.text}\n${p.begin} – ${p.end}`);
+        });
+      })
+      .catch(()=>{});
+  }
+  loadOfficialWarnings();
+
   /* ---------- Google-Anmeldung & echter Kalender ---------- */
   const GOOGLE_CLIENT_ID = '834201109275-au15o6plrp4iv4a007bcupm7pmhqvia4.apps.googleusercontent.com';
   const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
@@ -1471,6 +1525,7 @@
 
   function refreshLiveData(){
     loadWeather();
+    loadOfficialWarnings();
     if(googleAccessToken) loadGoogleCalendars();
     lastRefreshAt = Date.now();
     updateRefreshCountdown();
